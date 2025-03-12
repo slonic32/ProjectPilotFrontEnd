@@ -36,7 +36,12 @@ export default function App() {
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route path="/" element={<SharedLayout />}>
-            <Route index element={<HomePage />} />
+            <Route
+              index
+              element={
+                <PrivateRoute redirectTo="/signin" component={<HomePage />} />
+              }
+            />
 
             <Route
               path="/signup"

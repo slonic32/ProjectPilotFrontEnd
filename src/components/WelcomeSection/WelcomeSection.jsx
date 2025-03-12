@@ -1,5 +1,3 @@
-import { NavLink } from "react-router-dom";
-
 import css from "./WelcomeSection.module.css";
 
 export default function WelcomeSection() {
