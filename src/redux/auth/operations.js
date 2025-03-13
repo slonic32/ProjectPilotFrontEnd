@@ -52,11 +52,11 @@ function clearAuthHeader() {
 //   else return BACKEND_HOST + path;
 // };*/
 
-export const register = createAsyncThunk(
-  "auth/register",
+export const add = createAsyncThunk(
+  "auth/add",
   async (credentials, thunkAPI) => {
     try {
-      const res = await axios.post("/users/register", credentials);
+      const res = await axios.post("/users/add", credentials);
       // add token to the HTTP header
       setAuthHeader(res.data.token);
       return res.data;

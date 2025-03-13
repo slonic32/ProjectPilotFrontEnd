@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { register, login, logout, refresh, editUser } from "./operations";
+import { add, login, logout, refresh, editUser } from "./operations";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
@@ -51,7 +51,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(register.fulfilled, (state, action) => {
+      .addCase(add.fulfilled, (state, action) => {
         state.user.name = action.payload.user.name;
         state.user.email = action.payload.user.email;
         state.user.phone = action.payload.user.phone;
@@ -64,8 +64,8 @@ const authSlice = createSlice({
         state.error = null;
         state.loading = false;
       })
-      .addCase(register.pending, handlePending)
-      .addCase(register.rejected, handleRejected)
+      .addCase(add.pending, handlePending)
+      .addCase(add.rejected, handleRejected)
       .addCase(login.fulfilled, (state, action) => {
         state.user.name = action.payload.user.name;
         state.user.email = action.payload.user.email;
