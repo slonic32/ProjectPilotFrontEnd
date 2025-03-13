@@ -7,10 +7,10 @@ import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import css from "./AddUserForm.module.css";
 
-import { register as userRegister } from "../../redux/auth/operations";
+import { add as userAdd } from "../../redux/auth/operations";
 import toast from "react-hot-toast";
 
-const signUpValidationSchema = Yup.object({
+const addUserValidationSchema = Yup.object({
   email: Yup.string()
     .required("Email is required")
     .email("Invalid email address"),
@@ -33,14 +33,14 @@ export default function AddUserForm() {
     formState: { errors },
     reset,
   } = useForm({
-    resolver: yupResolver(signUpValidationSchema),
+    resolver: yupResolver(addUserValidationSchema),
   });
 
   const onSubmit = (data) => {
     const name = data.email.split("@")[0];
     const email = data.email;
     const password = data.password;
-    dispatch(userRegister({ name, email, password }))
+    dispatch(userAdd({ name, email, password }))
       .unwrap()
       .then(() => {
         toast.success("Sign up successful!", {
