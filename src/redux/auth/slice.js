@@ -52,7 +52,7 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(add.fulfilled, (state, action) => {
-        state.user.name = action.payload.user.name;
+        /* state.user.name = action.payload.user.name;
         state.user.email = action.payload.user.email;
         state.user.phone = action.payload.user.phone;
         state.user.admin = action.payload.user.admin;
@@ -60,7 +60,7 @@ const authSlice = createSlice({
         state.user.avatarURL = "";
         state.token = action.payload.token;
         state.refreshToken = action.payload.refreshToken;
-        state.isLoggedIn = true;
+        state.isLoggedIn = true;  */
         state.error = null;
         state.loading = false;
       })

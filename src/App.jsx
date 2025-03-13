@@ -6,6 +6,7 @@ import { selectError, selectLoading } from "./redux/selectors.js";
 import Loader from "./components/Loader/Loader.jsx";
 import RestrictedRoute from "./components/RestrictedRoute/RestrictedRoute.jsx";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute.jsx";
+import AdminRoute from "./components/AdminRoute/AdminRoute.jsx";
 import { store } from "./redux/store.js";
 import { Toaster } from "react-hot-toast";
 import SharedLayout from "./pages/SharedLayout/SharedLayout.jsx";
@@ -44,9 +45,9 @@ export default function App() {
             />
 
             <Route
-              path="/signup"
+              path="/adduser"
               element={
-                <RestrictedRoute redirectTo="/" component={<AddUser />} />
+                <AdminRoute redirectTo="/signin" component={<AddUser />} />
               }
             />
 

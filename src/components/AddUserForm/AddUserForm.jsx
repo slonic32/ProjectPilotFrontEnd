@@ -43,13 +43,13 @@ export default function AddUserForm() {
     dispatch(userAdd({ name, email, password }))
       .unwrap()
       .then(() => {
-        toast.success("Sign up successful!", {
+        toast.success("User added successful!", {
           duration: 2000,
         });
         reset();
       })
       .catch((error) => {
-        toast.error("Failed to sign up", { duration: 4000 });
+        toast.error("Failed to add user", { duration: 4000 });
       });
   };
 
@@ -62,7 +62,7 @@ export default function AddUserForm() {
             <label>Email</label>
             <input
               type="text"
-              placeholder="Enter your email"
+              placeholder="Enter user email"
               {...register("email")}
             />
             {errors.email && <p>{errors.email.message}</p>}
@@ -72,7 +72,7 @@ export default function AddUserForm() {
             <div>
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
+                placeholder="Enter user password"
                 {...register("password")}
               />
               <div onClick={() => setShowPassword(!showPassword)}></div>
@@ -94,10 +94,6 @@ export default function AddUserForm() {
             {errors.repeatPassword && <p>{errors.repeatPassword.message}</p>}
           </div>
           <button type="submit">Sign Up</button>
-          <p>
-            Already have an account?
-            <Link to="/signin">Sign in</Link>
-          </p>
         </form>
       </div>
     </div>

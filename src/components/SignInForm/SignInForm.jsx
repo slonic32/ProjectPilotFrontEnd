@@ -73,10 +73,6 @@ export default function SignInForm() {
           </div>
 
           <button type="submit">Sign In</button>
-          <p>
-            Don`t have an account?
-            <Link to="/signup">Sign Up</Link>
-          </p>
         </form>
       </div>
     </div>

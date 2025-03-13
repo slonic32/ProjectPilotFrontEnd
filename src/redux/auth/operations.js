@@ -58,7 +58,7 @@ export const add = createAsyncThunk(
     try {
       const res = await axios.post("/users/add", credentials);
       // add token to the HTTP header
-      setAuthHeader(res.data.token);
+      //setAuthHeader(res.data.token);
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
