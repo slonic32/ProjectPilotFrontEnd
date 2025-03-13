@@ -14,7 +14,7 @@ import { useAuth } from "./hooks/useAuth.js";
 
 const HomePage = lazy(() => import("./pages/HomePage/HomePage.jsx"));
 const SignInPage = lazy(() => import("./pages/SignInPage/SignInPage.jsx"));
-const SignUpPage = lazy(() => import("./pages/SignUpPage/SignUpPage.jsx"));
+const AddUser = lazy(() => import("./pages/AddUser/AddUser.jsx"));
 const LogOut = lazy(() => import("./pages/LogOut/LogOut.jsx"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage/ErrorPage.jsx"));
 
@@ -46,7 +46,7 @@ export default function App() {
             <Route
               path="/signup"
               element={
-                <RestrictedRoute redirectTo="/" component={<SignUpPage />} />
+                <RestrictedRoute redirectTo="/" component={<AddUser />} />
               }
             />
 

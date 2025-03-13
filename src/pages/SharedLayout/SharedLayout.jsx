@@ -14,7 +14,7 @@ export default function SharedLayout() {
             </NavLink>
 
             <NavLink to="/signup" className={css.headerLink}>
-              Register
+              Add User
             </NavLink>
             <NavLink to="/signin" className={css.headerLink}>
               Login

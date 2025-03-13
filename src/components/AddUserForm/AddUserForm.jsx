@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 
 import { Link } from "react-router-dom";
-import css from "./SignUpForm.module.css";
+import css from "./AddUserForm.module.css";
 
 import { register as userRegister } from "../../redux/auth/operations";
 import toast from "react-hot-toast";
@@ -22,7 +22,7 @@ const signUpValidationSchema = Yup.object({
     .required("Please confirm your password"),
 });
 
-export default function SignUpForm() {
+export default function AddUserForm() {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
