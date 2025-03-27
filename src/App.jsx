@@ -1,30 +1,28 @@
-import { Route, Routes } from "react-router-dom";
-import { Suspense, lazy, useEffect } from "react";
+import { useEffect, Suspense } from "react";
+import { Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { refresh } from "./redux/auth/operations.js";
-import { selectError, selectLoading } from "./redux/selectors.js";
-import Loader from "./components/Loader/Loader.jsx";
-import RestrictedRoute from "./components/RestrictedRoute/RestrictedRoute.jsx";
-import PrivateRoute from "./components/PrivateRoute/PrivateRoute.jsx";
-import AdminRoute from "./components/AdminRoute/AdminRoute.jsx";
-import { store } from "./redux/store.js";
+import { refresh } from "./redux/auth/operations";
+import { useAuth } from "./hooks/useAuth";
+import SharedLayout from "./pages/SharedLayout/SharedLayout";
+import HomePage from "./pages/HomePage/HomePage";
+import SignInPage from "./pages/SignInPage/SignInPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import AddUser from "./pages/AddUser/AddUser";
+import LogOut from "./pages/LogOut/LogOut";
+import ErrorPage from "./pages/ErrorPage/ErrorPage";
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
+import RestrictedRoute from "./components/RestrictedRoute/RestrictedRoute";
+import AdminRoute from "./components/AdminRoute/AdminRoute";
 import { Toaster } from "react-hot-toast";
-import SharedLayout from "./pages/SharedLayout/SharedLayout.jsx";
-
-import { useAuth } from "./hooks/useAuth.js";
-
-const HomePage = lazy(() => import("./pages/HomePage/HomePage.jsx"));
-const SignInPage = lazy(() => import("./pages/SignInPage/SignInPage.jsx"));
-const AddUser = lazy(() => import("./pages/AddUser/AddUser.jsx"));
-const LogOut = lazy(() => import("./pages/LogOut/LogOut.jsx"));
-const ErrorPage = lazy(() => import("./pages/ErrorPage/ErrorPage.jsx"));
+import Loader from "./components/Loader/Loader";
+import { selectLoading, selectError } from "./redux/selectors";
 
 export default function App() {
   const dispatch = useDispatch();
   const { isRefreshing } = useAuth();
 
   useEffect(() => {
-    store.dispatch(refresh());
+    dispatch(refresh());
   }, [dispatch]);
 
   const loading = useSelector(selectLoading);
@@ -43,28 +41,30 @@ export default function App() {
                 <PrivateRoute redirectTo="/signin" component={<HomePage />} />
               }
             />
-
             <Route
               path="/adduser"
               element={
                 <AdminRoute redirectTo="/signin" component={<AddUser />} />
               }
             />
-
             <Route
               path="/signin"
               element={
                 <RestrictedRoute redirectTo="/" component={<SignInPage />} />
               }
             />
-
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute redirectTo="/signin" component={<ProfilePage />} />
+              }
+            />
             <Route
               path="/logout"
               element={
                 <PrivateRoute redirectTo="/signin" component={<LogOut />} />
               }
             />
-
             <Route path="*" element={<ErrorPage />} />
           </Route>
         </Routes>
