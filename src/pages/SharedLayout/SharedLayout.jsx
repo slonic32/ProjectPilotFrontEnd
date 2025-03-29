@@ -1,36 +1,26 @@
 import css from "./SharedLayout.module.css";
-import { Outlet } from "react-router-dom";
-import { NavLink } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
 import { Suspense } from "react";
 
 export default function SharedLayout() {
   return (
     <>
       <header className={css.header}>
-        <div className={css.container}>
-          <nav>
-            <NavLink to="/" className={css.headerLink}>
-              Home page
-            </NavLink>
-
-            <NavLink to="/adduser" className={css.headerLink}>
-              Add User
-            </NavLink>
-            <NavLink to="/signin" className={css.headerLink}>
-              Login
-            </NavLink>
-            <NavLink to="/logout" className={css.headerLink}>
-              Logout
-            </NavLink>
+        <div className={css.navbar}>
+          <div className={css.brand}>ProjectPilot</div>
+          <nav className={css.navLinks}>
+            <NavLink to="/" className={css.link}>Home</NavLink>
+            <NavLink to="/adduser" className={css.link}>Add User</NavLink>
+            <NavLink to="/signin" className={css.link}>Login</NavLink>
+            <NavLink to="/logout" className={css.link}>Logout</NavLink>
           </nav>
         </div>
       </header>
+
       <main>
-        <div>
-          <Suspense fallback={<div>Loading...</div>}>
-            <Outlet />
-          </Suspense>
-        </div>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Outlet />
+        </Suspense>
       </main>
     </>
   );

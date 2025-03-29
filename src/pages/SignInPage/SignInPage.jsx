@@ -3,8 +3,8 @@ import css from "./SignInPage.module.css";
 
 export default function SignInPage() {
   return (
-    <main>
-      <div>
+    <main className={css["signin-page"]}>
+      <div className={css["content-wrapper"]}>
         <SignInForm />
       </div>
     </main>

@@ -1,16 +1,16 @@
 import WelcomeSection from "../../components/WelcomeSection/WelcomeSection";
 import UserInfo from "../../components/UserInfo/UserInfo";
+import ProjectDashboard from "../../components/ProjectDashboard/ProjectDashboard";
 import css from "./HomePage.module.css";
 
-function HomePage() {
+export default function HomePage() {
   return (
-    <div>
-      <div>
+    <div className={css.page}>
+      <div className={css.container}>
         <WelcomeSection />
         <UserInfo />
+        <ProjectDashboard />
       </div>
     </div>
   );
 }
-
-export default HomePage;
