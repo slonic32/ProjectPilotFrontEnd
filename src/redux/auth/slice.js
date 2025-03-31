@@ -108,7 +108,7 @@ const authSlice = createSlice({
         state.user.phone = action.payload.user.phone;
         state.user.admin = action.payload.user.admin;
         state.user.pm = action.payload.user.pm;
-        state.user.avatarURL = action.payload.avatarURL;
+        state.user.avatarURL = action.payload.user.avatarURL;
         state.isLoggedIn = true;
         state.isRefreshing = false;
         state.error = null;
@@ -136,7 +136,7 @@ const authSlice = createSlice({
         state.user.phone = action.payload.user.phone;
         state.user.admin = action.payload.user.admin;
         state.user.pm = action.payload.user.pm;
-        state.user.avatarURL = action.payload.avatarURL;
+        state.user.avatarURL = action.payload.user.avatarURL;
         state.error = null;
         state.loading = false;
       })

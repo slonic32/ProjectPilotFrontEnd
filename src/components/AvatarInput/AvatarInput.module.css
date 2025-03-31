@@ -1,0 +1,72 @@
+.avatarInput {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 24px;
+}
+@media screen and (min-width: 768px) and (max-width: 1439px) {
+  .avatarBox {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+}
+.avatarBox {
+  width: 75px;
+  height: 75px;
+  border-radius: 100%;
+  border: 1px solid blue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+}
+@media screen and (min-width: 768px) {
+  .avatarBox {
+    width: 100px;
+    height: 100px;
+  }
+}
+.svgAvatar {
+  width: 102px;
+  height: 102px;
+}
+.svgAvatarBtn {
+  width: 18px;
+  height: 18px;
+}
+.photo {
+  border-radius: 100px;
+}
+.upLoad {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #106fc2;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 14px;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.upLoad:hover {
+  background-color: #1106a1;
+}
+.upLoad p {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: white;
+}
+@media screen and (min-width: 768px) {
+  .svgAvatarBtn {
+    width: 21px;
+    height: 21px;
+  }
+  .upLoad {
+    font-size: 16px;
+  }
+}

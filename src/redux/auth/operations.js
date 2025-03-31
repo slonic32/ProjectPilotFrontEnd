@@ -1,20 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-function removeEmptyProps(obj) {
-  return Object.entries(obj).reduce((acc, [key, value]) => {
-    if (
-      value !== undefined &&
-      value !== null &&
-      value !== "" &&
-      !(Array.isArray(value) && value.length === 0)
-    ) {
-      acc[key] = value;
-    }
-    return acc;
-  }, {});
-}
-
 // add JWT
 function setAuthHeader(token) {
   axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -90,10 +76,13 @@ export const refresh = createAsyncThunk("auth/refresh", async (_, thunkAPI) => {
 
 export const editUser = createAsyncThunk(
   "auth/editUser",
-  async (data, thunkAPI) => {
+  async (formData, thunkAPI) => {
     try {
-      const cleanData = removeEmptyProps(data);
-      const res = await axios.patch("/users/update", cleanData);
+      const res = await axios.patch("/users/update", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       return res.data;
     } catch (error) {
