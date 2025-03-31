@@ -1,7 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-
 function removeEmptyProps(obj) {
   return Object.entries(obj).reduce((acc, [key, value]) => {
     if (
@@ -15,7 +14,6 @@ function removeEmptyProps(obj) {
     return acc;
   }, {});
 }
-
 
 // add JWT
 function setAuthHeader(token) {
@@ -52,7 +50,6 @@ export const login = createAsyncThunk(
 
       setAuthHeader(res.data.token);
 
-
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -62,8 +59,8 @@ export const login = createAsyncThunk(
 
 export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
   try {
-    await axios.get("/users/logout"); 
-    localStorage.removeItem("token");
+    await axios.get("/users/logout");
+    // remove  token from the HTTP header
     clearAuthHeader();
   } catch (error) {
     return thunkAPI.rejectWithValue(error.message);
@@ -71,9 +68,7 @@ export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
 });
 
 export const refresh = createAsyncThunk("auth/refresh", async (_, thunkAPI) => {
-
   // Reading the token from the state via getState()
-
 
   const state = thunkAPI.getState();
   const persistedToken = state.auth.token;

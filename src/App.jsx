@@ -1,5 +1,5 @@
-import { useEffect, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+import { Suspense, lazy, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { refresh } from "./redux/auth/operations.js";
 import { selectError, selectLoading } from "./redux/selectors.js";
@@ -18,7 +18,6 @@ const AddUser = lazy(() => import("./pages/AddUser/AddUser.jsx"));
 const LogOut = lazy(() => import("./pages/LogOut/LogOut.jsx"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage/ErrorPage.jsx"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage/ProfilePage"));
-
 
 export default function App() {
   const dispatch = useDispatch();
@@ -59,7 +58,10 @@ export default function App() {
             <Route
               path="/profile"
               element={
-                <PrivateRoute redirectTo="/signin" component={<ProfilePage />} />
+                <PrivateRoute
+                  redirectTo="/signin"
+                  component={<ProfilePage />}
+                />
               }
             />
             <Route

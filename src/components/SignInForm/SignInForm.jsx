@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/auth/operations";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import css from "./SignInForm.module.css";
 
 const signInValidationSchema = Yup.object().shape({
   email: Yup.string()
@@ -16,9 +16,8 @@ const signInValidationSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-export default function SignInForm({ onLoginSuccess }) {
+export default function SignInForm() {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Add navigation hook
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -33,13 +32,14 @@ export default function SignInForm({ onLoginSuccess }) {
     dispatch(login(data))
       .unwrap()
       .then(() => {
-        toast.success("Welcome back!");
-        console.log("Login successful! Triggering onLoginSuccess...");
-        onLoginSuccess(); // Notify parent of successful login
-        navigate("/profile"); // Redirect to profile page
+        toast.success("Welcome back! ", {
+          duration: 2000,
+        });
       })
       .catch(() => {
-        toast.error("Your email or password is incorrect.");
+        toast.error("Your email or password is incorrect🙈", {
+          duration: 4000,
+        });
       });
   };
 
@@ -56,18 +56,16 @@ export default function SignInForm({ onLoginSuccess }) {
           />
           {errors.email && <p>{errors.email.message}</p>}
         </div>
-           
+
         <div>
           <label>Password</label>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              {...register("password")}
-            />
-          </div>
-          {errors.password && <p>{errors.password.message}</p>}
-     
-
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter your password"
+            {...register("password")}
+          />
+        </div>
+        {errors.password && <p>{errors.password.message}</p>}
 
         <button type="submit">Sign In</button>
       </form>

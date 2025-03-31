@@ -16,24 +16,23 @@ const updateProfileSchema = Yup.object().shape({
 });
 
 export default function UpdateProfileForm() {
-
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
-
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(updateProfileSchema),
   });
 
-
   const onSubmit = (data) => {
     dispatch(editUser(data))
       .unwrap()
       .then(() => {
+        reset();
         toast.success("Profile updated successfully!", {
           duration: 2000,
         });
@@ -43,7 +42,6 @@ export default function UpdateProfileForm() {
           duration: 4000,
         });
       });
-
   };
 
   return (
@@ -76,6 +74,4 @@ export default function UpdateProfileForm() {
       <button type="submit">Update Profile</button>
     </form>
   );
-
 }
-
