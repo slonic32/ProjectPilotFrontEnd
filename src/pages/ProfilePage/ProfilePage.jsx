@@ -7,4 +7,6 @@ export default function ProfilePage() {
       <UpdateProfileForm />
     </div>
   );
+
 }
+

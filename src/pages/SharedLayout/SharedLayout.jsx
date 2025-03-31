@@ -6,6 +6,7 @@ import { useAuth } from "../../hooks/useAuth";
 
 export default function SharedLayout() {
   const { isLoggedIn, user } = useAuth(); // Get login state and user info
+
   return (
     <>
       <header className={css.header}>
@@ -14,6 +15,7 @@ export default function SharedLayout() {
             <NavLink to="/" className={css.headerLink}>
               Home page
             </NavLink>
+
 
             {isLoggedIn ? (
               <NavLink to="/profile" className={css.headerLink}>
@@ -25,11 +27,13 @@ export default function SharedLayout() {
               </NavLink>
             )}
 
+
             {isLoggedIn && user.admin && (
               <NavLink to="/adduser" className={css.headerLink}>
                 Add User
               </NavLink>
             )}
+
 
             {isLoggedIn && (
               <NavLink to="/logout" className={css.headerLink}>

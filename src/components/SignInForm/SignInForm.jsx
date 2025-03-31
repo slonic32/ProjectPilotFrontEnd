@@ -3,12 +3,9 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
-
-import { Link } from "react-router-dom";
-import css from "./SignInForm.module.css";
-
 import { login } from "../../redux/auth/operations";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const signInValidationSchema = Yup.object().shape({
   email: Yup.string()
@@ -19,8 +16,9 @@ const signInValidationSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-export default function SignInForm() {
+export default function SignInForm({ onLoginSuccess }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Add navigation hook
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -35,14 +33,13 @@ export default function SignInForm() {
     dispatch(login(data))
       .unwrap()
       .then(() => {
-        toast.success("Welcome back! ", {
-          duration: 2000,
-        });
+        toast.success("Welcome back!");
+        console.log("Login successful! Triggering onLoginSuccess...");
+        onLoginSuccess(); // Notify parent of successful login
+        navigate("/profile"); // Redirect to profile page
       })
-      .catch((error) => {
-        toast.error("Your email or password is incorrect🙈", {
-          duration: 4000,
-        });
+      .catch(() => {
+        toast.error("Your email or password is incorrect.");
       });
   };
 
@@ -59,9 +56,9 @@ export default function SignInForm() {
           />
           {errors.email && <p>{errors.email.message}</p>}
         </div>
+           
         <div>
           <label>Password</label>
-          <div>
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
@@ -69,7 +66,8 @@ export default function SignInForm() {
             />
           </div>
           {errors.password && <p>{errors.password.message}</p>}
-        </div>
+     
+
 
         <button type="submit">Sign In</button>
       </form>

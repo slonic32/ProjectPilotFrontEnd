@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+
 import toast from "react-hot-toast";
 import css from "./UpdateProfileForm.module.css";
 import { editUser } from "../../redux/auth/operations";
@@ -10,12 +11,15 @@ import { selectUser } from "../../redux/auth/selectors";
 const updateProfileSchema = Yup.object().shape({
   name: Yup.string(),
   email: Yup.string().email("Invalid email address"),
+
   avatar: Yup.string().url("Avatar must be a valid URL"),
 });
 
 export default function UpdateProfileForm() {
+
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
+
 
   const {
     register,
@@ -24,6 +28,7 @@ export default function UpdateProfileForm() {
   } = useForm({
     resolver: yupResolver(updateProfileSchema),
   });
+
 
   const onSubmit = (data) => {
     dispatch(editUser(data))
@@ -38,30 +43,39 @@ export default function UpdateProfileForm() {
           duration: 4000,
         });
       });
+
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={css.formContainer}>
       <div>
         <label>Name</label>
+
         <input type="text" placeholder={user.name} {...register("name")} />
+
         {errors.name && <p>{errors.name.message}</p>}
       </div>
       <div>
         <label>Email</label>
+
         <input type="email" placeholder={user.email} {...register("email")} />
+
         {errors.email && <p>{errors.email.message}</p>}
       </div>
       <div>
         <label>Avatar URL</label>
+
         <input
           type="text"
           placeholder={user.avatarURL}
           {...register("avatarURL")}
         />
+
         {errors.avatar && <p>{errors.avatar.message}</p>}
       </div>
       <button type="submit">Update Profile</button>
     </form>
   );
+
 }
+
