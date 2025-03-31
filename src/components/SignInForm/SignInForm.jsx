@@ -48,33 +48,31 @@ export default function SignInForm() {
 
   return (
     <div>
-      <div>
-        <h1>Sign In</h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
+      <h1>Sign In</h1>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <label>Email</label>
+          <input
+            type="text"
+            placeholder="Enter your email"
+            {...register("email")}
+          />
+          {errors.email && <p>{errors.email.message}</p>}
+        </div>
+        <div>
+          <label>Password</label>
           <div>
-            <label>Email</label>
             <input
-              type="text"
-              placeholder="Enter your email"
-              {...register("email")}
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
+              {...register("password")}
             />
-            {errors.email && <p>{errors.email.message}</p>}
           </div>
-          <div>
-            <label>Password</label>
-            <div>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                {...register("password")}
-              />
-            </div>
-            {errors.password && <p>{errors.password.message}</p>}
-          </div>
+          {errors.password && <p>{errors.password.message}</p>}
+        </div>
 
-          <button type="submit">Sign In</button>
-        </form>
-      </div>
+        <button type="submit">Sign In</button>
+      </form>
     </div>
   );
 }

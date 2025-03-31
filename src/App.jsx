@@ -7,7 +7,6 @@ import Loader from "./components/Loader/Loader.jsx";
 import RestrictedRoute from "./components/RestrictedRoute/RestrictedRoute.jsx";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute.jsx";
 import AdminRoute from "./components/AdminRoute/AdminRoute.jsx";
-import { store } from "./redux/store.js";
 import { Toaster } from "react-hot-toast";
 import SharedLayout from "./pages/SharedLayout/SharedLayout.jsx";
 
@@ -18,13 +17,14 @@ const SignInPage = lazy(() => import("./pages/SignInPage/SignInPage.jsx"));
 const AddUser = lazy(() => import("./pages/AddUser/AddUser.jsx"));
 const LogOut = lazy(() => import("./pages/LogOut/LogOut.jsx"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage/ErrorPage.jsx"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage/ProfilePage"));
 
 export default function App() {
   const dispatch = useDispatch();
   const { isRefreshing } = useAuth();
 
   useEffect(() => {
-    store.dispatch(refresh());
+    dispatch(refresh());
   }, [dispatch]);
 
   const loading = useSelector(selectLoading);
@@ -55,6 +55,16 @@ export default function App() {
               path="/signin"
               element={
                 <RestrictedRoute redirectTo="/" component={<SignInPage />} />
+              }
+            />
+
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute
+                  redirectTo="/signin"
+                  component={<ProfilePage />}
+                />
               }
             />
 
