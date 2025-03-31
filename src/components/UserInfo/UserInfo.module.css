@@ -1,0 +1,13 @@
+.photo {
+  border-radius: 100px;
+}
+.avatarBox {
+  width: 75px;
+  height: 75px;
+  border-radius: 100%;
+  border: 1px solid blue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+}

@@ -1,4 +1,5 @@
 .formContainer {
+
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 20px;
@@ -15,7 +16,7 @@
 }
 
 .formContainer input {
-  width: 80%;
+  width: 100%;
   padding: 8px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
@@ -24,6 +25,7 @@
 }
 
 .formContainer button {
+  width: 100%;
   padding: 10px;
   background-color: var(--main);
   color: white;
@@ -44,3 +46,4 @@
   margin-top: -10px;
   margin-bottom: 10px;
 }
+
