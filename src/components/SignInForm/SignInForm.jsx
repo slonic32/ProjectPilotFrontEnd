@@ -56,15 +56,19 @@ export default function SignInForm({ onLoginSuccess }) {
           />
           {errors.email && <p>{errors.email.message}</p>}
         </div>
+           
         <div>
           <label>Password</label>
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter your password"
-            {...register("password")}
-          />
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
+              {...register("password")}
+            />
+          </div>
           {errors.password && <p>{errors.password.message}</p>}
-        </div>
+     
+
+
         <button type="submit">Sign In</button>
       </form>
     </div>

@@ -1,21 +1,24 @@
 import { useEffect, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { refresh } from "./redux/auth/operations";
-import { useAuth } from "./hooks/useAuth";
-import SharedLayout from "./pages/SharedLayout/SharedLayout";
-import HomePage from "./pages/HomePage/HomePage";
-import SignInPage from "./pages/SignInPage/SignInPage";
-import ProfilePage from "./pages/ProfilePage/ProfilePage";
-import AddUser from "./pages/AddUser/AddUser";
-import LogOut from "./pages/LogOut/LogOut";
-import ErrorPage from "./pages/ErrorPage/ErrorPage";
-import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
-import RestrictedRoute from "./components/RestrictedRoute/RestrictedRoute";
-import AdminRoute from "./components/AdminRoute/AdminRoute";
+import { refresh } from "./redux/auth/operations.js";
+import { selectError, selectLoading } from "./redux/selectors.js";
+import Loader from "./components/Loader/Loader.jsx";
+import RestrictedRoute from "./components/RestrictedRoute/RestrictedRoute.jsx";
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute.jsx";
+import AdminRoute from "./components/AdminRoute/AdminRoute.jsx";
 import { Toaster } from "react-hot-toast";
-import Loader from "./components/Loader/Loader";
-import { selectLoading, selectError } from "./redux/selectors";
+import SharedLayout from "./pages/SharedLayout/SharedLayout.jsx";
+
+import { useAuth } from "./hooks/useAuth.js";
+
+const HomePage = lazy(() => import("./pages/HomePage/HomePage.jsx"));
+const SignInPage = lazy(() => import("./pages/SignInPage/SignInPage.jsx"));
+const AddUser = lazy(() => import("./pages/AddUser/AddUser.jsx"));
+const LogOut = lazy(() => import("./pages/LogOut/LogOut.jsx"));
+const ErrorPage = lazy(() => import("./pages/ErrorPage/ErrorPage.jsx"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage/ProfilePage"));
+
 
 export default function App() {
   const dispatch = useDispatch();
@@ -59,6 +62,16 @@ export default function App() {
                 <PrivateRoute redirectTo="/signin" component={<ProfilePage />} />
               }
             />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute
+                  redirectTo="/signin"
+                  component={<ProfilePage />}
+                />
+              }
+            />
+
             <Route
               path="/logout"
               element={

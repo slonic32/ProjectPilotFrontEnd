@@ -16,9 +16,6 @@ export default function SharedLayout() {
               Home page
             </NavLink>
 
-            <NavLink to="/adduser" className={css.headerLink}>
-              Add User
-            </NavLink>
 
             {isLoggedIn ? (
               <NavLink to="/profile" className={css.headerLink}>
@@ -29,6 +26,14 @@ export default function SharedLayout() {
                 Login
               </NavLink>
             )}
+
+
+            {isLoggedIn && user.admin && (
+              <NavLink to="/adduser" className={css.headerLink}>
+                Add User
+              </NavLink>
+            )}
+
 
             {isLoggedIn && (
               <NavLink to="/logout" className={css.headerLink}>
