@@ -2,8 +2,10 @@ import css from "./SharedLayout.module.css";
 import { Outlet } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Suspense } from "react";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function SharedLayout() {
+  const { isLoggedIn, user } = useAuth(); // Get login state and user info
   return (
     <>
       <header className={css.header}>
@@ -13,15 +15,27 @@ export default function SharedLayout() {
               Home page
             </NavLink>
 
-            <NavLink to="/adduser" className={css.headerLink}>
-              Add User
-            </NavLink>
-            <NavLink to="/signin" className={css.headerLink}>
-              Login
-            </NavLink>
-            <NavLink to="/logout" className={css.headerLink}>
-              Logout
-            </NavLink>
+            {isLoggedIn ? (
+              <NavLink to="/profile" className={css.headerLink}>
+                {user.name} {/* Show user's name */}
+              </NavLink>
+            ) : (
+              <NavLink to="/signin" className={css.headerLink}>
+                Login
+              </NavLink>
+            )}
+
+            {isLoggedIn && user.admin && (
+              <NavLink to="/adduser" className={css.headerLink}>
+                Add User
+              </NavLink>
+            )}
+
+            {isLoggedIn && (
+              <NavLink to="/logout" className={css.headerLink}>
+                Logout
+              </NavLink>
+            )}
           </nav>
         </div>
       </header>
