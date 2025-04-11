@@ -12,12 +12,16 @@ import SharedLayout from "./pages/SharedLayout/SharedLayout.jsx";
 
 import { useAuth } from "./hooks/useAuth.js";
 
+// Lazy-loaded pages
 const HomePage = lazy(() => import("./pages/HomePage/HomePage.jsx"));
 const SignInPage = lazy(() => import("./pages/SignInPage/SignInPage.jsx"));
 const AddUser = lazy(() => import("./pages/AddUser/AddUser.jsx"));
 const LogOut = lazy(() => import("./pages/LogOut/LogOut.jsx"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage/ErrorPage.jsx"));
-const ProfilePage = lazy(() => import("./pages/ProfilePage/ProfilePage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage/ProfilePage.jsx"));
+const ClientManagement = lazy(() =>
+  import("./pages/ClientManagement/ClientManagement.jsx")
+);
 
 export default function App() {
   const dispatch = useDispatch();
@@ -65,15 +69,14 @@ export default function App() {
               }
             />
             <Route
-              path="/profile"
+              path="/clients"
               element={
                 <PrivateRoute
                   redirectTo="/signin"
-                  component={<ProfilePage />}
+                  component={<ClientManagement />}
                 />
               }
             />
-
             <Route
               path="/logout"
               element={
