@@ -41,7 +41,7 @@ jobs:
         uses: actions/configure-pages@v3
 
       - name: Upload built site
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-artifact@v3.1.2
         with:
           path: './dist' # change to 'build' if needed
 
