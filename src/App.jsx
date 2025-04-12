@@ -22,6 +22,8 @@ const ProfilePage = lazy(() => import("./pages/ProfilePage/ProfilePage.jsx"));
 const ClientManagement = lazy(() =>
   import("./pages/ClientManagement/ClientManagement.jsx")
 );
+const AdminPanel = lazy(() => import("./pages/AdminPanel/AdminPanel.jsx"));
+
 
 export default function App() {
   const dispatch = useDispatch();
@@ -57,6 +59,12 @@ export default function App() {
               path="/signin"
               element={
                 <RestrictedRoute redirectTo="/" component={<SignInPage />} />
+              }
+            />
+            <Route
+              path="/admin-panel"
+              element={
+                <AdminRoute redirectTo="/signin" component={<AdminPanel />} />
               }
             />
             <Route

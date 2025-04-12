@@ -34,7 +34,11 @@ export default function SharedLayout() {
                 Add User
               </NavLink>
             )}
-
+            {isLoggedIn && user.admin && (
+              <NavLink to="/admin-panel" className={css.link}>
+                Admin Panel
+              </NavLink>
+            )}
 
             {isLoggedIn && (
               <NavLink to="/logout" className={css.link}>

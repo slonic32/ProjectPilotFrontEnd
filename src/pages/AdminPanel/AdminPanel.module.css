@@ -1,0 +1,88 @@
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .container h1 {
+    margin-bottom: 20px;
+    color: #0b3c3c;
+    font-size: 2rem;
+  }
+  
+  .tableContainer {
+    overflow-x: auto;
+    margin-top: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .usersTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .usersTable th,
+  .usersTable td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .usersTable th {
+    background-color: #20e3b2;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .usersTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .usersTable tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #666;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .noUsers {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+  }
+  
+  @media (max-width: 768px) {
+    .tableContainer {
+      overflow-x: scroll;
+    }
+    
+    .usersTable th,
+    .usersTable td {
+      padding: 8px 10px;
+    }
+    
+    .avatar {
+      width: 30px;
+      height: 30px;
+    }
+    
+    .container h1 {
+      font-size: 1.5rem;
+    }
+  }
