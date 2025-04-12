@@ -1,0 +1,109 @@
+.signin-container {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 60px;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #0b3c3c;
+    min-width: 1000px;
+    gap: 60px;
+  }
+  
+  .plant-image {
+    width: 350px;
+    height: auto;
+  }
+  
+  .form-box {
+    flex: 1;
+  }
+  
+  .form-box h1 {
+    font-size: 42px;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+  
+  /* Floating Label Inputs */
+  .input-group {
+    position: relative;
+    margin-bottom: 32px;
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 24px 50px 16px 16px;
+    font-size: 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #0b3c3c;
+    outline: none;
+    color: #0b3c3c;
+  }
+  
+  .input-field::placeholder {
+    color: transparent;
+  }
+  
+  .floating-label {
+    position: absolute;
+    top: 22px;
+    left: 16px;
+    font-size: 20px;
+    color: #666;
+    pointer-events: none;
+    transition: all 0.3s ease;
+  }
+  
+  .input-field:focus + .floating-label,
+  .input-field:not(:placeholder-shown) + .floating-label {
+    top: -10px;
+    font-size: 14px;
+    color: #0b3c3c;
+  }
+  
+  .input-group svg {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0b3c3c;
+  }
+  
+  .error-message {
+    color: crimson;
+    font-size: 16px;
+    margin-top: 6px;
+  }
+  
+  .signin-button {
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(to right, #29ffc6, #00c896);
+    border: none;
+    border-radius: 30px;
+    color: white;
+    font-weight: bold;
+    font-size: 22px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: 0.2s ease;
+  }
+  
+  .signin-button:hover {
+    background: #009f7f;
+  }
+  
+  .link-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    font-weight: 600;
+    font-size: 18px;
+    color: #0b3c3c;
+    cursor: pointer;
+  }
+  

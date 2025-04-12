@@ -1,0 +1,15 @@
+.wrapper {
+    text-align: center;
+  }
+  
+  .wrapper p {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  
+  .wrapper h1 {
+    font-size: 42px;
+    font-weight: bold;
+    color: #0c3;
+  }
+  

@@ -1,0 +1,52 @@
+.dashboard {
+    background: rgba(255, 255, 255, 0.7);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+  
+  .sectionTitle {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  
+  .createBtn {
+    background: linear-gradient(to right, #29ffc6, #00c896);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    padding: 14px 24px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    cursor: pointer;
+  }
+  
+  .projectList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .projectItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    background: #f0fdf7;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 16px;
+  }
+  
+  .active {
+    color: #0c8;
+    font-weight: bold;
+  }
+  
+  .closed {
+    color: #d22;
+    font-weight: bold;
+  }
+  
