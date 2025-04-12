@@ -31,8 +31,16 @@ export default function SignInForm() {
   const onSubmit = (data) => {
     dispatch(login(data))
       .unwrap()
-      .then(() => toast.success("Welcome back!"))
-      .catch(() => toast.error("Incorrect email or password"));
+      .then(() => {
+        toast.success("Welcome back! ", {
+          duration: 2000,
+        });
+      })
+      .catch(() => {
+        toast.error("Your email or password is incorrect🙈", {
+          duration: 4000,
+        });
+      });
   };
 
   return (
@@ -60,7 +68,7 @@ export default function SignInForm() {
             <input
               type="email"
               id="email"
-              placeholder=" "
+              placeholder="Enter your email"
               {...register("email")}
               className={css["input-field"]}
             />
@@ -74,7 +82,7 @@ export default function SignInForm() {
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              placeholder=" "
+              placeholder="Enter your password"
               {...register("password")}
               className={css["input-field"]}
             />
