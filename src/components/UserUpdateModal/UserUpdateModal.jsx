@@ -34,23 +34,24 @@ export default function UserUpdateModal({ user, onClose, onUpdate }) {
     try {
       const token = localStorage.getItem("token");
       
-      // Create FormData object as the API expects multipart/form-data
-      const formData = new FormData();
-      formData.append('name', data.name);
-      formData.append('email', data.email);
-      formData.append('phone', data.phone || '');
-      formData.append('admin', data.admin);
-      formData.append('pm', data.pm);
+      // Create a JSON payload according to the API documentation
+      const payload = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone || "",
+        admin: data.admin,
+        pm: data.pm
+      };
       
-      // Use the correct endpoint based on the API documentation
+      // Use the ID-based endpoint as shown in the API documentation
       const response = await axios.patch(
-        "/users/update",
-        formData,
+        `/users/${user._id}`, // Use the user's ID in the URL
+        payload, // Send data as JSON
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,
             "Accept": "application/json",
-            // Don't set Content-Type - Axios will set it automatically with boundary for FormData
+            "Content-Type": "application/json" // Send as JSON instead of FormData
           },
         }
       );
@@ -60,7 +61,11 @@ export default function UserUpdateModal({ user, onClose, onUpdate }) {
       onClose(); // Close the modal
     } catch (error) {
       console.error("Failed to update user:", error);
-      toast.error("Failed to update user");
+      if (error.response?.data?.message?.includes("duplicate key")) {
+        toast.error("Email already exists. Please use a different email.");
+      } else {
+        toast.error("Failed to update user");
+      }
     }
   };
 
