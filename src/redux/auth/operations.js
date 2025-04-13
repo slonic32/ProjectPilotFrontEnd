@@ -2,7 +2,7 @@ import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // add JWT
-function setAuthHeader(token) {
+export function setAuthHeader(token) {
   axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 }
 
