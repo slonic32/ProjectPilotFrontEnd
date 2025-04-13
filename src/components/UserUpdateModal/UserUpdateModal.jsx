@@ -8,7 +8,9 @@ import css from "./UserUpdateModal.module.css";
 
 const updateUserSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
-  email: Yup.string().email("Invalid email address").required("Email is required"),
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
   phone: Yup.string(),
   admin: Yup.boolean(),
   pm: Yup.boolean(),
@@ -32,30 +34,21 @@ export default function UserUpdateModal({ user, onClose, onUpdate }) {
 
   const onSubmit = async (data) => {
     try {
-      const token = localStorage.getItem("token");
-      
       // Create a JSON payload according to the API documentation
       const payload = {
         name: data.name,
         email: data.email,
         phone: data.phone || "",
         admin: data.admin,
-        pm: data.pm
+        pm: data.pm,
       };
-      
+
       // Use the ID-based endpoint as shown in the API documentation
       const response = await axios.patch(
         `/users/${user._id}`, // Use the user's ID in the URL
-        payload, // Send data as JSON
-        {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Accept": "application/json",
-            "Content-Type": "application/json" // Send as JSON instead of FormData
-          },
-        }
+        payload // Send data as JSON
       );
-      
+
       toast.success("User updated successfully!");
       onUpdate(response.data); // Pass updated user data to parent component
       onClose(); // Close the modal
@@ -77,34 +70,48 @@ export default function UserUpdateModal({ user, onClose, onUpdate }) {
           <div className={css.formGroup}>
             <label>Name</label>
             <input type="text" {...register("name")} />
-            {errors.name && <p className={css.errorText}>{errors.name.message}</p>}
+            {errors.name && (
+              <p className={css.errorText}>{errors.name.message}</p>
+            )}
           </div>
-          
+
           <div className={css.formGroup}>
             <label>Email</label>
             <input type="email" {...register("email")} />
-            {errors.email && <p className={css.errorText}>{errors.email.message}</p>}
+            {errors.email && (
+              <p className={css.errorText}>{errors.email.message}</p>
+            )}
           </div>
-          
+
           <div className={css.formGroup}>
             <label>Phone</label>
             <input type="tel" {...register("phone")} />
-            {errors.phone && <p className={css.errorText}>{errors.phone.message}</p>}
+            {errors.phone && (
+              <p className={css.errorText}>{errors.phone.message}</p>
+            )}
           </div>
-          
+
           <div className={css.checkboxGroup}>
             <input type="checkbox" id="adminCheck" {...register("admin")} />
             <label htmlFor="adminCheck">Admin</label>
           </div>
-          
+
           <div className={css.checkboxGroup}>
             <input type="checkbox" id="pmCheck" {...register("pm")} />
             <label htmlFor="pmCheck">Project Manager</label>
           </div>
-          
+
           <div className={css.buttonGroup}>
-            <button type="submit" className={css.saveButton}>Save Changes</button>
-            <button type="button" onClick={onClose} className={css.cancelButton}>Cancel</button>
+            <button type="submit" className={css.saveButton}>
+              Save Changes
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className={css.cancelButton}
+            >
+              Cancel
+            </button>
           </div>
         </form>
       </div>
