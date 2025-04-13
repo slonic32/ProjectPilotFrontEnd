@@ -3,6 +3,7 @@ import css from "./AvatarInput.module.css";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { selectAvatar } from "../../redux/auth/selectors";
+import { default as defaultAvatar } from "../../assets/images/default-avatar.jpg";
 
 export default function AvatarInput({ control, register, setMyAvatar }) {
   const [inputImg, setInputImage] = useState(false);
@@ -21,7 +22,7 @@ export default function AvatarInput({ control, register, setMyAvatar }) {
   const avatarDefault = (
     <img
       className={css.photo}
-      src="./default-avatar.jpg"
+      src={defaultAvatar}
       width="100%"
       height="100%"
       alt="Avatar"

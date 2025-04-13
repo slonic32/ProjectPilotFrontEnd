@@ -3,6 +3,8 @@ import axios from "axios";
 import css from "./AdminPanel.module.css";
 import toast from "react-hot-toast";
 import UserUpdateModal from "../../components/UserUpdateModal/UserUpdateModal";
+import { default as defaultAvatar } from "../../assets/images/default-avatar.jpg";
+import { BACKEND_HOST } from "../../config/backend";
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -17,13 +19,9 @@ export default function AdminPanel() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await axios.get("/users/all", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      console.log("First user from API:", response.data.users[0]); // Log first user to see structure
+
+      const response = await axios.get("/users/all");
+      // console.log("First user from API:", response.data.users[0]); // Log first user to see structure
       setUsers(response.data.users);
       setLoading(false);
     } catch (error) {
@@ -36,13 +34,8 @@ export default function AdminPanel() {
   const handleDeleteUser = async (user) => {
     if (window.confirm(`Are you sure you want to delete ${user.name}?`)) {
       try {
-        const token = localStorage.getItem("token");
         // Use _id instead of id
-        await axios.delete(`/users/${user._id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        await axios.delete(`/users/${user._id}`);
         toast.success(`User ${user.name} deleted successfully`);
         // Refresh user list after deletion
         fetchUsers();
@@ -53,19 +46,17 @@ export default function AdminPanel() {
     }
   };
   users.map((user, index) => (
-    <tr key={user._id || index}>
-      {/* ... rest of the code ... */}
-    </tr>
-  ))
+    <tr key={user._id || index}>{/* ... rest of the code ... */}</tr>
+  ));
   const handleUpdateUser = (user) => {
     setSelectedUser(user);
     setShowUpdateModal(true);
   };
 
   // And in the handleUserUpdated function
-const handleUserUpdated = (updatedUser) => {
+  const handleUserUpdated = (updatedUser) => {
     // Update the user in the users array
-    const updatedUsers = users.map(user => 
+    const updatedUsers = users.map((user) =>
       user._id === updatedUser._id ? updatedUser : user
     );
     setUsers(updatedUsers);
@@ -75,7 +66,7 @@ const handleUserUpdated = (updatedUser) => {
   return (
     <div className={css.container}>
       <h1>Admin Panel - User Management</h1>
-      
+
       {loading ? (
         <div className={css.loading}>Loading users...</div>
       ) : (
@@ -97,9 +88,13 @@ const handleUserUpdated = (updatedUser) => {
                 users.map((user, index) => (
                   <tr key={user.id || index}>
                     <td>
-                      <img 
-                        src={user.avatarURL ? user.avatarURL : "/default-avatar.png"} 
-                        alt={`${user.name}'s avatar`} 
+                      <img
+                        src={
+                          user.avatarURL
+                            ? BACKEND_HOST + "/" + user.avatarURL
+                            : defaultAvatar
+                        }
+                        alt={`${user.name}'s avatar`}
                         className={css.avatar}
                       />
                     </td>
@@ -109,13 +104,13 @@ const handleUserUpdated = (updatedUser) => {
                     <td>{user.admin ? "Yes" : "No"}</td>
                     <td>{user.pm ? "Yes" : "No"}</td>
                     <td className={css.actions}>
-                      <button 
+                      <button
                         className={css.updateButton}
                         onClick={() => handleUpdateUser(user)}
                       >
                         Update
                       </button>
-                      <button 
+                      <button
                         className={css.deleteButton}
                         onClick={() => handleDeleteUser(user)} // Pass the entire user object
                       >
@@ -126,16 +121,18 @@ const handleUserUpdated = (updatedUser) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className={css.noUsers}>No users found</td>
+                  <td colSpan="7" className={css.noUsers}>
+                    No users found
+                  </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
       )}
-      
+
       {showUpdateModal && selectedUser && (
-        <UserUpdateModal 
+        <UserUpdateModal
           user={selectedUser}
           onClose={() => setShowUpdateModal(false)}
           onUpdate={handleUserUpdated}
