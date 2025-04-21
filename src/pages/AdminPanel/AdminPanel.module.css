@@ -1,120 +1,129 @@
+/* Fullscreen layout and backdrop */
 .container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100px 20px 40px 20px; /* Add top padding for header */
+  background: 
+    linear-gradient(to right, rgba(32, 227, 178, 0.9), rgba(32, 227, 178, 0.9)),
+    url("/bg-plants.jpg") center/cover no-repeat;
+  background-attachment: fixed;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+
+.container h1 {
+  margin-bottom: 20px;
+  color: #004d3c;
+  font-size: 2rem;
+  text-align: center;
+}
+
+/* Table wrapper */
+.tableContainer {
+  width: 100%;
+  max-width: 1200px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+  padding: 24px;
+}
+
+/* Table styling */
+.usersTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.usersTable th,
+.usersTable td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.usersTable th {
+  background-color: #20e3b2;
+  color: white;
+  font-weight: bold;
+}
+
+.usersTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.usersTable tr:hover {
+  background-color: #eefdf8;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Loading and empty state */
+.loading,
+.noUsers {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #555;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.updateButton,
+.deleteButton {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.updateButton {
+  background-color: #ffcb05;
+  color: #333;
+}
+
+.updateButton:hover {
+  background-color: #eabb00;
+}
+
+.deleteButton {
+  background-color: #ff5252;
+  color: white;
+}
+
+.deleteButton:hover {
+  background-color: #e04545;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
   .container h1 {
-    margin-bottom: 20px;
-    color: #0b3c3c;
-    font-size: 2rem;
-  }
-  
-  .tableContainer {
-    overflow-x: auto;
-    margin-top: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .usersTable {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .usersTable th,
-  .usersTable td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .usersTable th {
-    background-color: #20e3b2;
-    color: white;
-    font-weight: bold;
-  }
-  
-  .usersTable tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .usersTable tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  .loading {
-    text-align: center;
-    padding: 40px;
-    font-size: 18px;
-    color: #666;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .noUsers {
-    text-align: center;
-    padding: 20px;
-    color: #666;
-  }
-  
-  @media (max-width: 768px) {
-    .tableContainer {
-      overflow-x: scroll;
-    }
-    
-    .usersTable th,
-    .usersTable td {
-      padding: 8px 10px;
-    }
-    
-    .avatar {
-      width: 30px;
-      height: 30px;
-    }
-    
-    .container h1 {
-      font-size: 1.5rem;
-    }
+    font-size: 1.5rem;
   }
 
-  .actions {
-    display: flex;
-    gap: 8px;
+  .avatar {
+    width: 30px;
+    height: 30px;
   }
-  
-  .updateButton, .deleteButton {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
+
+  .usersTable th,
+  .usersTable td {
+    padding: 10px;
     font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s;
   }
-  
-  .updateButton {
-    background-color: #ffcb05;
-    color: #333;
-  }
-  
-  .deleteButton {
-    background-color: #ff5252;
-    color: white;
-  }
-  
-  .updateButton:hover {
-    background-color: #eabb00;
-  }
-  
-  .deleteButton:hover {
-    background-color: #e04545;
-  }
+}
