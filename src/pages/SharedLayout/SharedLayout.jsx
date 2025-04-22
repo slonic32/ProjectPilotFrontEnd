@@ -2,7 +2,7 @@ import css from "./SharedLayout.module.css";
 import { Outlet, NavLink } from "react-router-dom";
 import { Suspense } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import plant from "../../assets/images/plant.png";
+import logo from "../../assets/images/logo.png";
 
 export default function SharedLayout() {
   const { isLoggedIn, user } = useAuth(); // Get login state and user info
@@ -13,14 +13,12 @@ export default function SharedLayout() {
         <header className={css.header}>
           <div className={css.navbar}>
             <div className={css.brand}>
-              <img src={plant} alt="Plant Logo" className={css.logo} />
-              ProjectPilot
+            <NavLink to="/">
+              <img src={logo} alt="Logo" className={css.logo} />
+            </NavLink>
+
             </div>
             <nav className={css.navLinks}>
-              <NavLink to="/" className={css.link}>
-                Home page
-              </NavLink>
-
               {isLoggedIn ? (
                 <NavLink to="/profile" className={css.link}>
                   {user.name}

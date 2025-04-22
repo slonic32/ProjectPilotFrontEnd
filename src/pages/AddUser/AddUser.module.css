@@ -1,0 +1,5 @@
+/* Apply margin-top only to the form */
+.AddUserForm {
+    margin-top: 50px; /* This will only affect the form */
+  }
+  

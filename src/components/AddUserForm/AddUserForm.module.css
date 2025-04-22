@@ -11,6 +11,7 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     animation: fadeIn 0.6s ease-in;
+    top: 50px;
   }
   
   .formBox {
@@ -21,6 +22,7 @@
     max-width: 520px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
     animation: slideUp 0.5s ease-in-out;
+    margin-top: 50px;
   }
   
   
