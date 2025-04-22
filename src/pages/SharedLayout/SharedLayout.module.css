@@ -1,14 +1,18 @@
 .header {
-  width: 90%;
-  margin: 24px auto;
-  padding: 16px 32px;
-  background: rgba(0, 78, 30, 0.2); /* light transparent green */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(2px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 128, 96, 0.15); /* green glassy tint */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 0 0 16px 16px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 24px 48px;
+  z-index: 10;
 }
+
+
 
 .navbar {
   display: flex;
@@ -17,9 +21,27 @@
 }
 
 .brand {
-  font-size: 24px;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  font-size: 28px;
+  font-weight: 700;
   color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+  margin-right: 12px;
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+  background-color: white;
+  object-fit: contain;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.1);
 }
 
 .navLinks {
@@ -34,6 +56,7 @@
   text-decoration: none;
   transition: all 0.3s ease;
   position: relative;
+  padding: 4px 8px;
 }
 
 .link::after {
@@ -53,5 +76,6 @@
 }
 
 .link.active {
-  color: #ffe;
+  color: #ffeecc;
+  font-weight: 600;
 }

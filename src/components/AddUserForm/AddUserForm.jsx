@@ -4,21 +4,17 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 
-import { Link } from "react-router-dom";
 import css from "./AddUserForm.module.css";
-
 import { add as userAdd } from "../../redux/auth/operations";
 import toast from "react-hot-toast";
 
 const addUserValidationSchema = Yup.object({
   name: Yup.string().required("Name is required"),
-  email: Yup.string()
-    .required("Email is required")
-    .email("Invalid email address"),
+  email: Yup.string().required("Email is required").email("Invalid email"),
   phone: Yup.string(),
   password: Yup.string()
     .required("Password is required")
-    .min(4, "Password must be at least 4 characters long"),
+    .min(4, "Password must be at least 4 characters"),
   repeatPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Please confirm your password"),
@@ -45,46 +41,35 @@ export default function AddUserForm() {
     dispatch(userAdd({ name, email, phone, password, admin, pm }))
       .unwrap()
       .then(() => {
-        toast.success("User added successful!", {
-          duration: 2000,
-        });
+        toast.success("User added successfully!", { duration: 2000 });
         reset();
       })
-      .catch((error) => {
+      .catch(() => {
         toast.error("Failed to add user", { duration: 4000 });
       });
   };
 
   return (
-    <div>
-      <div>
-        <h1>Add new user</h1>
+    <div className={css.wrapper}>
+      <div className={css.formBox}>
+        <h1>Add New User</h1>
+
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
             <label>Name</label>
-            <input
-              type="text"
-              placeholder="Enter user name"
-              {...register("name")}
-            />
+            <input type="text" placeholder="Enter user name" {...register("name")} />
             {errors.name && <p>{errors.name.message}</p>}
           </div>
+
           <div>
             <label>Email</label>
-            <input
-              type="text"
-              placeholder="Enter user email"
-              {...register("email")}
-            />
+            <input type="text" placeholder="Enter user email" {...register("email")} />
             {errors.email && <p>{errors.email.message}</p>}
           </div>
+
           <div>
             <label>Phone</label>
-            <input
-              type="tel"
-              placeholder="Enter user phone"
-              {...register("phone")}
-            />
+            <input type="tel" placeholder="Enter user phone" {...register("phone")} />
             {errors.phone && <p>{errors.phone.message}</p>}
           </div>
 
@@ -100,38 +85,34 @@ export default function AddUserForm() {
 
           <div>
             <label>Password</label>
-            <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter user password"
+                placeholder="Enter password"
                 {...register("password")}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-              >
+              <button type="button" onClick={() => setShowPassword(!showPassword)}>
                 {showPassword ? "🙈" : "👁️"}
               </button>
             </div>
             {errors.password && <p>{errors.password.message}</p>}
           </div>
+
           <div>
             <label>Repeat Password</label>
-            <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <input
                 type={showRepeatPassword ? "text" : "password"}
                 placeholder="Repeat password"
                 {...register("repeatPassword")}
               />
-              <button
-                type="button"
-                onClick={() => setShowRepeatPassword(!showRepeatPassword)}
-              >
+              <button type="button" onClick={() => setShowRepeatPassword(!showRepeatPassword)}>
                 {showRepeatPassword ? "🙈" : "👁️"}
               </button>
             </div>
             {errors.repeatPassword && <p>{errors.repeatPassword.message}</p>}
           </div>
+
           <button type="submit">Sign Up</button>
         </form>
       </div>

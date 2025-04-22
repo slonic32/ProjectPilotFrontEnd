@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../../redux/auth/operations";
 import { showNotification } from "../../utils/notification";
 import css from "./LogOut.module.css";
+import plantImage from "../../assets/images/plant.png";
 
 const title = "Log out";
 
@@ -14,7 +15,6 @@ export default function LogOut() {
     setIsLoggingOut(true);
     try {
       await dispatch(logout()).unwrap();
-
       showNotification("You have been logged out successfully!", "success");
     } catch (error) {
       showNotification("Failed to log out. Please try again.", "error");
@@ -25,16 +25,15 @@ export default function LogOut() {
   };
 
   return (
-    <>
-      <div>
+    <div className={css.wrapper}>
+      <div className={css.card}>
+        <img src={plantImage} alt="plant" className={css.plant} />
         <h2>{title}</h2>
         <p>Do you really want to leave?</p>
-        <div>
-          <button onClick={handleLogout} disabled={isLoggingOut}>
-            {isLoggingOut ? "Logging out..." : "Log out"}
-          </button>
-        </div>
+        <button onClick={handleLogout} disabled={isLoggingOut}>
+          {isLoggingOut ? "Logging out..." : "Log out"}
+        </button>
       </div>
-    </>
+    </div>
   );
 }

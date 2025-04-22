@@ -1,46 +1,142 @@
+/* Fullscreen Wrapper with soft blur and clean fit */
+.wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-height: 100vh;
+  width: 100vw;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background:
+    linear-gradient(to right, rgba(32, 227, 178, 0.9), rgba(32, 227, 178, 0.9)),
+    url("/bg-plants.jpg") center/cover no-repeat;
+
+  background-attachment: fixed;
+  padding: 32px;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: fadeIn 0.6s ease-in;
+}
+
+/* Form Card */
 .formContainer {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 20px;
-  max-width: 400px;
-  margin: 20px auto;
-  background-color: #f9f9f9;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.96);
+  padding: 36px 52px;
+  border-radius: 28px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  animation: slideUp 0.5s ease-in-out;
 }
 
-.formContainer label {
+/* Headings */
+h2 {
+  font-size: 26px;
+  color: #004d3c;
+  margin-bottom: 28px;
+  font-weight: 700;
+}
+
+/* Avatar Upload */
+.avatarBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #00c896;
+  outline: none;
+}
+
+/* Labels */
+label {
   display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.formContainer input {
-  width: 80%;
-  padding: 8px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
   font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+  text-align: left;
 }
 
-.formContainer button {
-  padding: 10px;
-  background-color: var(--main);
-  color: white;
+/* Submit Button */
+button[type="submit"] {
+  margin-top: 12px;
+  width: 100%;
+  padding: 14px;
+  background: #00c896;
   border: none;
-  border-radius: 4px;
+  color: white;
+  border-radius: 22px;
   font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color var(--animation);
+  transition: background 0.3s ease;
 }
 
-.formContainer button:hover {
-  background-color: #005bb5;
+button[type="submit"]:hover {
+  background: #00b68f;
 }
 
-.formContainer p {
-  color: var(--error);
-  font-size: 12px;
-  margin-top: -10px;
+/* Toggle Buttons (👁️) */
+.toggleBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 18px;
+  line-height: 1;
+  color: #555;
+}
+
+/* Error Message */
+.error {
+  color: #d22;
+  font-size: 13px;
+  margin-top: -6px;
   margin-bottom: 10px;
+  text-align: left;
+}
+
+/* Animations */
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
