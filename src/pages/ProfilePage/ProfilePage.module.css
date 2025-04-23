@@ -1,0 +1,12 @@
+.profileContainer {
+    padding: 20px;
+    margin-top: 50px;
+  }
+  
+  .profileTitle {
+    font-size: 2rem; /* Adjust the title size as needed */
+    font-weight: bold;
+    color: #333; /* You can change the color */
+    margin-bottom: 20px; /* Adds spacing below the title */
+  }
+  
