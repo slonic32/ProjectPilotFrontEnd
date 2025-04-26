@@ -62,3 +62,199 @@
   color: #d22;
   font-weight: 600;
 }
+
+
+/* Modal styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+  margin-top: 0;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.formGroup input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.phaseSection {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.phaseSection h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.activityInput {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.activityInput input {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.addBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.removeBtn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.cancelBtn {
+  background-color: #f2f2f2;
+  color: #333;
+  margin-right: 10px;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submitBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submitBtn:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+/* Add these styles to the end of your CSS file */
+
+/* Project details styles */
+.projectDetails {
+  margin: 20px 0;
+}
+
+.projectDetails h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.pmDetails {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 15px 0;
+}
+
+.pmDetails h4 {
+  margin-top: 0;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.phaseDetails {
+  margin-bottom: 15px;
+  border-left: 4px solid #4caf50;
+  padding-left: 15px;
+}
+
+.phaseDetails h5 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.phaseDetails ul {
+  margin-top: 5px;
+  padding-left: 20px;
+}
+
+.phaseDetails li {
+  margin-bottom: 5px;
+}
+
+/* Action button styles */
+.updateBtn {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.deleteBtn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.closeBtn {
+  background-color: #f2f2f2;
+  color: #333;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
