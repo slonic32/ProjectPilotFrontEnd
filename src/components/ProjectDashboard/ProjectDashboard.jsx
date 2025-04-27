@@ -16,6 +16,7 @@ export default function ProjectDashboard() {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editedProject, setEditedProject] = useState(null);
+  const [users, setUsers] = useState([]);
   const [newProject, setNewProject] = useState({
     name: "",
     acs: {
@@ -31,6 +32,35 @@ export default function ProjectDashboard() {
   useEffect(() => {
     fetchProjects();
   }, []);
+
+
+  const fetchUsers = async () => {
+    try {
+      console.log("Fetching users...");
+      const response = await axios.get("/users/all");
+      console.log("Users response:", response.data);
+      
+      // Access the users array correctly from the response
+      if (response.data && response.data.users && Array.isArray(response.data.users)) {
+        setUsers(response.data.users);
+      } else {
+        setUsers([]);
+        console.error("Unexpected users data format:", response.data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch users:", err);
+    }
+  };
+  
+  useEffect(() => {
+    if (showModal || editMode) {
+      fetchUsers();
+    }
+  }, [showModal, editMode]);
+  
+  useEffect(() => {
+    console.log("Current users list:", users);
+  }, [users]);
 
   const fetchProjects = async () => {
     try {
@@ -54,11 +84,16 @@ export default function ProjectDashboard() {
     setShowDetailsModal(true);
   } catch (err) {
     console.error("Failed to fetch project details:", err);
-    alert("Failed to load project details. Please try again.");
   } finally {
     setLoadingDetails(false);
   }
 };
+useEffect(() => {
+  if (selectedProject) {
+    console.log("User PM status:", user);
+    console.log("Is user PM?:", user?.pm);
+  }
+}, [selectedProject]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -107,25 +142,26 @@ const removeActivityField = (phase, index) => {
     };
   });
 };
+
 const handleEnterEditMode = () => {
   setEditedProject({
     name: selectedProject.name,
     closed: selectedProject.closed,
     acs: {
       initiating: selectedProject.acs.initiating.length > 0 
-        ? selectedProject.acs.initiating.map(activity => activity.name || "") 
+        ? selectedProject.acs.initiating.map(activity => activity._id || "") 
         : [""],
       planning: selectedProject.acs.planning.length > 0 
-        ? selectedProject.acs.planning.map(activity => activity.name || "") 
+        ? selectedProject.acs.planning.map(activity => activity._id || "") 
         : [""],
       executing: selectedProject.acs.executing.length > 0 
-        ? selectedProject.acs.executing.map(activity => activity.name || "") 
+        ? selectedProject.acs.executing.map(activity => activity._id || "") 
         : [""],
       monitoring: selectedProject.acs.monitoring.length > 0 
-        ? selectedProject.acs.monitoring.map(activity => activity.name || "") 
+        ? selectedProject.acs.monitoring.map(activity => activity._id || "") 
         : [""],
       closing: selectedProject.acs.closing.length > 0 
-        ? selectedProject.acs.closing.map(activity => activity.name || "") 
+        ? selectedProject.acs.closing.map(activity => activity._id || "") 
         : [""]
     }
   });
@@ -221,16 +257,13 @@ const handleUpdateSubmit = async (e) => {
     
     fetchProjects();
     
-    alert("Project updated successfully");
   } catch (err) {
     console.error("Failed to update project:", err);
     
     if (err.response) {
       console.error("Status:", err.response.status);
       console.error("Response data:", err.response.data);
-      alert(`Failed to update project: ${err.response.status} - ${JSON.stringify(err.response.data)}`);
     } else {
-      alert("Failed to update project. Please try again.");
     }
   } finally {
     setIsSubmitting(false);
@@ -253,14 +286,11 @@ const deleteProject = async (projectId) => {
     
     setProjects(projects.filter(project => project._id !== projectId));
     
-    alert("Project deleted successfully");
   } catch (err) {
     console.error("Failed to delete project:", err);
     
     if (err.response) {
-      alert(`Failed to delete project: ${err.response.data.message || JSON.stringify(err.response.data)}`);
     } else {
-      alert("Failed to delete project. Please try again.");
     }
   } finally {
     setIsSubmitting(false);
@@ -315,9 +345,7 @@ const handleSubmit = async (e) => {
     if (err.response) {
       console.error("Status:", err.response.status);
       console.error("Response data:", err.response.data);
-      alert(`Failed to create project: ${err.response.status} - ${JSON.stringify(err.response.data)}`);
     } else {
-      alert("Failed to create project. Please try again.");
     }
   } finally {
     setIsSubmitting(false);
@@ -379,109 +407,133 @@ const handleSubmit = async (e) => {
               <h3>Project Activities</h3>
               
               {/* Initiating Phase */}
-              <div className={css.phaseSection}>
-                <h4>Initiating Phase</h4>
-                {newProject.acs.initiating.map((activity, index) => (
-                  <div key={`initiating-${index}`} className={css.activityInput}>
-                    <input
-                      type="text"
-                      value={activity}
-                      onChange={(e) => handleAcsChange("initiating", e.target.value, index)}
-                      placeholder="Enter activity"
-                    />
-                    {newProject.acs.initiating.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => removeActivityField("initiating", index)}
-                        className={css.removeBtn}
+                <div className={css.phaseSection}>
+                  <h4>Initiating Phase</h4>
+                  {newProject.acs.initiating.map((userId, index) => (
+                    <div key={`initiating-${index}`} className={css.activityInput}>
+                      <select
+                        value={userId}
+                        onChange={(e) => handleAcsChange("initiating", e.target.value, index)}
+                        className={css.userSelect}
                       >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button 
-                  type="button" 
-                  onClick={() => addActivityField("initiating")}
-                  className={css.addBtn}
-                >
-                  Add Activity
-                </button>
-              </div>
+                        <option value="">Select user</option>
+                        {users.map(user => (
+                          <option key={user._id} value={user._id}>
+                            {user.name}
+                          </option>
+                        ))}
+                      </select>
+                      {newProject.acs.initiating.length > 1 && (
+                        <button 
+                          type="button" 
+                          onClick={() => removeActivityField("initiating", index)}
+                          className={css.removeBtn}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button 
+                    type="button" 
+                    onClick={() => addActivityField("initiating")}
+                    className={css.addBtn}
+                  >
+                    Add User
+                  </button>
+                </div>
               
               {/* Planning Phase */}
-              <div className={css.phaseSection}>
-                <h4>Planning Phase</h4>
-                {newProject.acs.planning.map((activity, index) => (
-                  <div key={`planning-${index}`} className={css.activityInput}>
-                    <input
-                      type="text"
-                      value={activity}
-                      onChange={(e) => handleAcsChange("planning", e.target.value, index)}
-                      placeholder="Enter activity"
-                    />
-                    {newProject.acs.planning.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => removeActivityField("planning", index)}
-                        className={css.removeBtn}
+                <div className={css.phaseSection}>
+                  <h4>Planning Phase</h4>
+                  {newProject.acs.planning.map((userId, index) => (
+                    <div key={`planning-${index}`} className={css.activityInput}>
+                      <select
+                        value={userId}
+                        onChange={(e) => handleAcsChange("planning", e.target.value, index)}
+                        className={css.userSelect}
                       >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button 
-                  type="button" 
-                  onClick={() => addActivityField("planning")}
-                  className={css.addBtn}
-                >
-                  Add Activity
-                </button>
-              </div>
+                        <option value="">Select user</option>
+                        {users.map(user => (
+                          <option key={user._id} value={user._id}>
+                            {user.name}
+                          </option>
+                        ))}
+                      </select>
+                      {newProject.acs.planning.length > 1 && (
+                        <button 
+                          type="button" 
+                          onClick={() => removeActivityField("planning", index)}
+                          className={css.removeBtn}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button 
+                    type="button" 
+                    onClick={() => addActivityField("planning")}
+                    className={css.addBtn}
+                  >
+                    Add User
+                  </button>
+                </div>
               
               {/* Executing Phase */}
-              <div className={css.phaseSection}>
-                <h4>Executing Phase</h4>
-                {newProject.acs.executing.map((activity, index) => (
-                  <div key={`executing-${index}`} className={css.activityInput}>
-                    <input
-                      type="text"
-                      value={activity}
-                      onChange={(e) => handleAcsChange("executing", e.target.value, index)}
-                      placeholder="Enter activity"
-                    />
-                    {newProject.acs.executing.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => removeActivityField("executing", index)}
-                        className={css.removeBtn}
-                      >
-                        Remove
-                      </button>
-                    )}
+                  <div className={css.phaseSection}>
+                    <h4>Executing Phase</h4>
+                    {newProject.acs.executing.map((userId, index) => (
+                      <div key={`executing-${index}`} className={css.activityInput}>
+                        <select
+                          value={userId}
+                          onChange={(e) => handleAcsChange("executing", e.target.value, index)}
+                          className={css.userSelect}
+                        >
+                          <option value="">Select user</option>
+                          {users.map(user => (
+                            <option key={user._id} value={user._id}>
+                              {user.name}
+                            </option>
+                          ))}
+                        </select>
+                        {newProject.acs.executing.length > 1 && (
+                          <button 
+                            type="button" 
+                            onClick={() => removeActivityField("executing", index)}
+                            className={css.removeBtn}
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button 
+                      type="button" 
+                      onClick={() => addActivityField("executing")}
+                      className={css.addBtn}
+                    >
+                      Add User
+                    </button>
                   </div>
-                ))}
-                <button 
-                  type="button" 
-                  onClick={() => addActivityField("executing")}
-                  className={css.addBtn}
-                >
-                  Add Activity
-                </button>
-              </div>
               
               {/* Monitoring Phase */}
               <div className={css.phaseSection}>
                 <h4>Monitoring Phase</h4>
-                {newProject.acs.monitoring.map((activity, index) => (
+                {newProject.acs.monitoring.map((userId, index) => (
                   <div key={`monitoring-${index}`} className={css.activityInput}>
-                    <input
-                      type="text"
-                      value={activity}
+                    <select
+                      value={userId}
                       onChange={(e) => handleAcsChange("monitoring", e.target.value, index)}
-                      placeholder="Enter activity"
-                    />
+                      className={css.userSelect}
+                    >
+                      <option value="">Select user</option>
+                      {users.map(user => (
+                        <option key={user._id} value={user._id}>
+                          {user.name}
+                        </option>
+                      ))}
+                    </select>
                     {newProject.acs.monitoring.length > 1 && (
                       <button 
                         type="button" 
@@ -498,21 +550,27 @@ const handleSubmit = async (e) => {
                   onClick={() => addActivityField("monitoring")}
                   className={css.addBtn}
                 >
-                  Add Activity
+                  Add User
                 </button>
               </div>
               
               {/* Closing Phase */}
               <div className={css.phaseSection}>
                 <h4>Closing Phase</h4>
-                {newProject.acs.closing.map((activity, index) => (
+                {newProject.acs.closing.map((userId, index) => (
                   <div key={`closing-${index}`} className={css.activityInput}>
-                    <input
-                      type="text"
-                      value={activity}
+                    <select
+                      value={userId}
                       onChange={(e) => handleAcsChange("closing", e.target.value, index)}
-                      placeholder="Enter activity"
-                    />
+                      className={css.userSelect}
+                    >
+                      <option value="">Select user</option>
+                      {users.map(user => (
+                        <option key={user._id} value={user._id}>
+                          {user.name}
+                        </option>
+                      ))}
+                    </select>
                     {newProject.acs.closing.length > 1 && (
                       <button 
                         type="button" 
@@ -529,44 +587,39 @@ const handleSubmit = async (e) => {
                   onClick={() => addActivityField("closing")}
                   className={css.addBtn}
                 >
-                  Add Activity
+                  Add User
                 </button>
               </div>
-              
-              <div className={css.formGroup}>
-                <label>
-                  <input
-                    type="checkbox"
-                    name="closed"
-                    checked={newProject.closed}
-                    onChange={(e) => setNewProject(prev => ({ ...prev, closed: e.target.checked }))}
-                  />
-                  Project Closed
-                </label>
-              </div>
-              
               <div className={css.modalActions}>
-                <button 
-                  type="button" 
-                  onClick={() => setShowModal(false)}
-                  className={css.cancelBtn}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className={css.submitBtn}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Creating..." : "Create Project"}
-                </button>
-              </div>
+              <button 
+                type="button" 
+                onClick={() => setShowModal(false)}
+                className={css.cancelBtn}
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                className={css.submitBtn}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Creating..." : "Create Project"}
+              </button>
+            </div>
             </form>
           </div>
         </div>
       )}
 {showDetailsModal && selectedProject && (
-  <div className={css.modalOverlay}>
+  <div 
+  className={css.modalOverlay}
+  onClick={(e) => {
+    if (e.target.className === css.modalOverlay) {
+      setShowDetailsModal(false);
+      setEditMode(false);
+    }
+  }}
+>
     <div className={css.modal}>
       {loadingDetails ? (
         <p>Loading project details...</p>
@@ -575,37 +628,62 @@ const handleSubmit = async (e) => {
           <h2>{editMode ? "Edit Project" : "Project Details"}</h2>
           
           {!editMode ? (
-            <div className={css.projectDetails}>
-              <h3>{selectedProject.name}</h3>
-              <p><strong>Start Date:</strong> {selectedProject.startDate}</p>
-              <p><strong>Status:</strong> {selectedProject.closed ? "Closed" : "Active"}</p>
-              
-              <div className={css.pmDetails}>
-                <h4>Project Manager</h4>
-                <p>
-                  {selectedProject.pm.name} ({selectedProject.pm.email})
-                </p>
+            <>
+              <div className={css.projectDetails}>
+                <h3>{selectedProject.name}</h3>
+                <p><strong>Start Date:</strong> {selectedProject.startDate}</p>
+                <p><strong>Status:</strong> {selectedProject.closed ? "Closed" : "Active"}</p>
+                
+                <div className={css.pmDetails}>
+                  <h4>Project Manager</h4>
+                  <p>
+                    {selectedProject.pm.name} ({selectedProject.pm.email})
+                  </p>
+                </div>
+                
+                <h4>Project Activities</h4>
+                
+                {Object.entries(selectedProject.acs).map(([phase, activities]) => (
+                  <div key={phase} className={css.phaseDetails}>
+                    <h5>{phase.charAt(0).toUpperCase() + phase.slice(1)} Phase</h5>
+                    {activities.length === 0 ? (
+                      <p>No activities in this phase</p>
+                    ) : (
+                      <ul>
+                        {activities.map((activity) => (
+                          <li key={activity._id}>
+                            {activity.name} ({activity.email})
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
               </div>
               
-              <h4>Project Activities</h4>
-              
-              {Object.entries(selectedProject.acs).map(([phase, activities]) => (
-                <div key={phase} className={css.phaseDetails}>
-                  <h5>{phase.charAt(0).toUpperCase() + phase.slice(1)} Phase</h5>
-                  {activities.length === 0 ? (
-                    <p>No activities in this phase</p>
-                  ) : (
-                    <ul>
-                      {activities.map((activity) => (
-                        <li key={activity._id}>
-                          {activity.name} ({activity.email})
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
+              <div className={css.modalActions}>
+                <button 
+                  className={css.updateBtn}
+                  onClick={handleEnterEditMode}
+                  disabled={isSubmitting}
+                >
+                  Update Project
+                </button>
+                <button 
+                  className={css.deleteBtn}
+                  onClick={() => deleteProject(selectedProject._id)}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Deleting..." : "Delete Project"}
+                </button>
+                <button 
+                  onClick={() => setShowDetailsModal(false)}
+                  className={css.closeBtn}
+                >
+                  Close
+                </button>
+              </div>
+            </>
           ) : (
             <form onSubmit={handleUpdateSubmit}>
               <div className={css.formGroup}>
@@ -623,206 +701,190 @@ const handleSubmit = async (e) => {
               
               {/* Initiating Phase */}
               <div className={css.phaseSection}>
-                <h5>Initiating Phase</h5>
-                {editedProject.acs.initiating.map((activity, index) => (
-                  <div key={`edit-initiating-${index}`} className={css.activityInput}>
-                    <input
-                      type="text"
-                      value={activity}
-                      onChange={(e) => handleEditAcsChange("initiating", e.target.value, index)}
-                      placeholder="Enter activity"
-                    />
-                    {editedProject.acs.initiating.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => removeEditActivityField("initiating", index)}
-                        className={css.removeBtn}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button 
-                  type="button" 
-                  onClick={() => addEditActivityField("initiating")}
-                  className={css.addBtn}
-                >
-                  Add Activity
-                </button>
-              </div>
+              <h5>Initiating Phase</h5>
+              {editedProject.acs.initiating.map((userId, index) => (
+                <div key={`edit-initiating-${index}`} className={css.activityInput}>
+                  <select
+                    value={userId}
+                    onChange={(e) => handleEditAcsChange("initiating", e.target.value, index)}
+                    className={css.userSelect}
+                  >
+                    <option value="">Select user</option>
+                    {users.map(user => (
+                      <option key={user._id} value={user._id}>
+                        {user.name}
+                      </option>
+                    ))}
+                  </select>
+                  {editedProject.acs.initiating.length > 1 && (
+                    <button 
+                      type="button" 
+                      onClick={() => removeEditActivityField("initiating", index)}
+                      className={css.removeBtn}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button 
+                type="button" 
+                onClick={() => addEditActivityField("initiating")}
+                className={css.addBtn}
+              >
+                Add User
+              </button>
+            </div>
               
               {/* Planning Phase */}
               <div className={css.phaseSection}>
-                <h5>Planning Phase</h5>
-                {editedProject.acs.planning.map((activity, index) => (
-                  <div key={`edit-planning-${index}`} className={css.activityInput}>
-                    <input
-                      type="text"
-                      value={activity}
-                      onChange={(e) => handleEditAcsChange("planning", e.target.value, index)}
-                      placeholder="Enter activity"
-                    />
-                    {editedProject.acs.planning.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => removeEditActivityField("planning", index)}
-                        className={css.removeBtn}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button 
-                  type="button" 
-                  onClick={() => addEditActivityField("planning")}
-                  className={css.addBtn}
-                >
-                  Add Activity
-                </button>
-              </div>
+              <h5>Planning Phase</h5>
+              {editedProject.acs.planning.map((userId, index) => (
+                <div key={`edit-planning-${index}`} className={css.activityInput}>
+                  <select
+                    value={userId}
+                    onChange={(e) => handleEditAcsChange("planning", e.target.value, index)}
+                    className={css.userSelect}
+                  >
+                    <option value="">Select user</option>
+                    {users.map(user => (
+                      <option key={user._id} value={user._id}>
+                        {user.name}
+                      </option>
+                    ))}
+                  </select>
+                  {editedProject.acs.planning.length > 1 && (
+                    <button 
+                      type="button" 
+                      onClick={() => removeEditActivityField("planning", index)}
+                      className={css.removeBtn}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button 
+                type="button" 
+                onClick={() => addEditActivityField("planning")}
+                className={css.addBtn}
+              >
+                Add User
+              </button>
+            </div>
               
               {/* Executing Phase */}
               <div className={css.phaseSection}>
-                <h5>Executing Phase</h5>
-                {editedProject.acs.executing.map((activity, index) => (
-                  <div key={`edit-executing-${index}`} className={css.activityInput}>
-                    <input
-                      type="text"
-                      value={activity}
-                      onChange={(e) => handleEditAcsChange("executing", e.target.value, index)}
-                      placeholder="Enter activity"
-                    />
-                    {editedProject.acs.executing.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => removeEditActivityField("executing", index)}
-                        className={css.removeBtn}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button 
-                  type="button" 
-                  onClick={() => addEditActivityField("executing")}
-                  className={css.addBtn}
-                >
-                  Add Activity
-                </button>
-              </div>
+              <h5>Executing Phase</h5>
+              {editedProject.acs.executing.map((userId, index) => (
+                <div key={`edit-executing-${index}`} className={css.activityInput}>
+                  <select
+                    value={userId}
+                    onChange={(e) => handleEditAcsChange("executing", e.target.value, index)}
+                    className={css.userSelect}
+                  >
+                    <option value="">Select user</option>
+                    {users.map(user => (
+                      <option key={user._id} value={user._id}>
+                        {user.name}
+                      </option>
+                    ))}
+                  </select>
+                  {editedProject.acs.executing.length > 1 && (
+                    <button 
+                      type="button" 
+                      onClick={() => removeEditActivityField("executing", index)}
+                      className={css.removeBtn}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button 
+                type="button" 
+                onClick={() => addEditActivityField("executing")}
+                className={css.addBtn}
+              >
+                Add User
+              </button>
+            </div>
               
               {/* Monitoring Phase */}
               <div className={css.phaseSection}>
-                <h5>Monitoring Phase</h5>
-                {editedProject.acs.monitoring.map((activity, index) => (
-                  <div key={`edit-monitoring-${index}`} className={css.activityInput}>
-                    <input
-                      type="text"
-                      value={activity}
-                      onChange={(e) => handleEditAcsChange("monitoring", e.target.value, index)}
-                      placeholder="Enter activity"
-                    />
-                    {editedProject.acs.monitoring.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => removeEditActivityField("monitoring", index)}
-                        className={css.removeBtn}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button 
-                  type="button" 
-                  onClick={() => addEditActivityField("monitoring")}
-                  className={css.addBtn}
-                >
-                  Add Activity
-                </button>
-              </div>
+              <h5>Monitoring Phase</h5>
+              {editedProject.acs.monitoring.map((userId, index) => (
+                <div key={`edit-monitoring-${index}`} className={css.activityInput}>
+                  <select
+                    value={userId}
+                    onChange={(e) => handleEditAcsChange("monitoring", e.target.value, index)}
+                    className={css.userSelect}
+                  >
+                    <option value="">Select user</option>
+                    {users.map(user => (
+                      <option key={user._id} value={user._id}>
+                        {user.name}
+                      </option>
+                    ))}
+                  </select>
+                  {editedProject.acs.monitoring.length > 1 && (
+                    <button 
+                      type="button" 
+                      onClick={() => removeEditActivityField("monitoring", index)}
+                      className={css.removeBtn}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button 
+                type="button" 
+                onClick={() => addEditActivityField("monitoring")}
+                className={css.addBtn}
+              >
+                Add User
+              </button>
+            </div>
               
               {/* Closing Phase */}
               <div className={css.phaseSection}>
-                <h5>Closing Phase</h5>
-                {editedProject.acs.closing.map((activity, index) => (
-                  <div key={`edit-closing-${index}`} className={css.activityInput}>
-                    <input
-                      type="text"
-                      value={activity}
-                      onChange={(e) => handleEditAcsChange("closing", e.target.value, index)}
-                      placeholder="Enter activity"
-                    />
-                    {editedProject.acs.closing.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => removeEditActivityField("closing", index)}
-                        className={css.removeBtn}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button 
-                  type="button" 
-                  onClick={() => addEditActivityField("closing")}
-                  className={css.addBtn}
-                >
-                  Add Activity
-                </button>
-              </div>
-              
-              <div className={css.formGroup}>
-                <label>
-                  <input
-                    type="checkbox"
-                    name="closed"
-                    checked={editedProject.closed}
-                    onChange={handleEditCheckboxChange}
-                  />
-                  Project Closed
-                </label>
-              </div>
-            </form>
-          )}
-          
-          {/* Action buttons that change based on edit mode */}
-          <div className={css.modalActions}>
-            {!editMode ? (
-              
-              <>
-                {user.pm && (
-                  <>
+              <h5>Closing Phase</h5>
+              {editedProject.acs.closing.map((userId, index) => (
+                <div key={`edit-closing-${index}`} className={css.activityInput}>
+                  <select
+                    value={userId}
+                    onChange={(e) => handleEditAcsChange("closing", e.target.value, index)}
+                    className={css.userSelect}
+                  >
+                    <option value="">Select user</option>
+                    {users.map(user => (
+                      <option key={user._id} value={user._id}>
+                        {user.name}
+                      </option>
+                    ))}
+                  </select>
+                  {editedProject.acs.closing.length > 1 && (
                     <button 
-                      className={css.updateBtn}
-                      onClick={handleEnterEditMode}
-                      disabled={isSubmitting}
+                      type="button" 
+                      onClick={() => removeEditActivityField("closing", index)}
+                      className={css.removeBtn}
                     >
-                      Update Project
+                      Remove
                     </button>
-                    <button 
-                      className={css.deleteBtn}
-                      onClick={() => deleteProject(selectedProject._id)}
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Deleting..." : "Delete Project"}
-                    </button>
-                  </>
-                )}
-                <button 
-                  onClick={() => setShowDetailsModal(false)}
-                  className={css.closeBtn}
-                >
-                  Close
-                </button>
-              </>
-            ) : (
-             
-              <>
+                  )}
+                </div>
+              ))}
+              <button 
+                type="button" 
+                onClick={() => addEditActivityField("closing")}
+                className={css.addBtn}
+              >
+                Add User
+              </button>
+            </div>
+              
+              <div className={css.modalActions}>
                 <button 
                   type="button" 
                   onClick={() => setEditMode(false)}
@@ -831,22 +893,20 @@ const handleSubmit = async (e) => {
                   Cancel
                 </button>
                 <button 
-                  type="button" 
-                  onClick={handleUpdateSubmit}
+                  type="submit"
                   className={css.submitBtn}
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Saving..." : "Save Changes"}
                 </button>
-              </>
-            )}
-          </div>
+              </div>
+            </form>
+          )}
         </>
       )}
     </div>
   </div>
 )}
     </div>
-
   );
 }
