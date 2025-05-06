@@ -32,6 +32,7 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   overflow-x: auto;
   padding: 24px;
+  margin-top: 20px; 
 }
 
 /* Table styling */
@@ -127,4 +128,95 @@
     padding: 10px;
     font-size: 14px;
   }
+}
+
+
+
+/* Component Layout Container */
+.componentsContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 32px 0;
+}
+
+/* Welcome Section Styling */
+:global(.welcomeSection) {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  grid-column: span 3;
+  text-align: center;
+}
+
+/* User Info Styling */
+:global(.userInfo) {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  grid-column: span 1;
+}
+
+/* Project Dashboard Styling */
+:global(.projectDashboard) {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  grid-column: span 2;
+}
+
+/* Responsive Design for Components */
+@media (max-width: 1024px) {
+  .componentsContainer {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  :global(.welcomeSection) {
+    grid-column: span 2;
+  }
+
+  :global(.userInfo) {
+    grid-column: span 1;
+  }
+
+  :global(.projectDashboard) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .componentsContainer {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  :global(.welcomeSection),
+  :global(.userInfo),
+  :global(.projectDashboard) {
+    grid-column: span 1;
+  }
+}
+
+.whiteBgWrapper {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: 32px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Update existing componentsContainer to remove background from individual components */
+:global(.welcomeSection),
+:global(.userInfo),
+:global(.projectDashboard) {
+  background-color: transparent;
+  box-shadow: none;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }

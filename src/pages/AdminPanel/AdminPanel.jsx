@@ -5,6 +5,9 @@ import toast from "react-hot-toast";
 import UserUpdateModal from "../../components/UserUpdateModal/UserUpdateModal";
 import { default as defaultAvatar } from "../../assets/images/default-avatar.jpg";
 import { BACKEND_HOST } from "../../config/backend";
+import WelcomeSection from "../../components/WelcomeSection/WelcomeSection";
+import UserInfo from "../../components/UserInfo/UserInfo";
+import ProjectDashboard from "../../components/ProjectDashboard/ProjectDashboard";
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -21,7 +24,6 @@ export default function AdminPanel() {
       setLoading(true);
 
       const response = await axios.get("/users/all");
-      // console.log("First user from API:", response.data.users[0]); // Log first user to see structure
       setUsers(response.data.users);
       setLoading(false);
     } catch (error) {
@@ -34,10 +36,8 @@ export default function AdminPanel() {
   const handleDeleteUser = async (user) => {
     if (window.confirm(`Are you sure you want to delete ${user.name}?`)) {
       try {
-        // Use _id instead of id
         await axios.delete(`/users/${user._id}`);
         toast.success(`User ${user.name} deleted successfully`);
-        // Refresh user list after deletion
         fetchUsers();
       } catch (error) {
         console.error("Failed to delete user:", error);
@@ -45,27 +45,32 @@ export default function AdminPanel() {
       }
     }
   };
-  users.map((user, index) => (
-    <tr key={user._id || index}>{/* ... rest of the code ... */}</tr>
-  ));
+
   const handleUpdateUser = (user) => {
     setSelectedUser(user);
     setShowUpdateModal(true);
   };
 
-  // And in the handleUserUpdated function
   const handleUserUpdated = (updatedUser) => {
-    // Update the user in the users array
     const updatedUsers = users.map((user) =>
       user._id === updatedUser._id ? updatedUser : user
     );
     setUsers(updatedUsers);
-    fetchUsers(); // Refresh the user list to ensure data is current
+    fetchUsers();
   };
 
   return (
     <div className={css.container}>
       <h1>Admin Panel - User Management</h1>
+      
+      <div className={css.whiteBgWrapper}>
+      <div className={css.componentsContainer}>
+        <WelcomeSection />
+        <UserInfo />
+        <ProjectDashboard />
+      </div>
+    </div>
+
 
       {loading ? (
         <div className={css.loading}>Loading users...</div>
@@ -112,7 +117,7 @@ export default function AdminPanel() {
                       </button>
                       <button
                         className={css.deleteButton}
-                        onClick={() => handleDeleteUser(user)} // Pass the entire user object
+                        onClick={() => handleDeleteUser(user)}
                       >
                         Delete
                       </button>

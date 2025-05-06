@@ -8,8 +8,7 @@ export default function HomePage() {
     <div className={css.page}>
       <div className={css.container}>
         <WelcomeSection />
-        <UserInfo />
-        <ProjectDashboard />
+        
       </div>
     </div>
   );
