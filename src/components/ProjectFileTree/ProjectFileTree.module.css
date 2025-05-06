@@ -1,0 +1,195 @@
+.treeContainer {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 24px;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+  
+  .treeTitle {
+    font-size: 1.5rem;
+    color: #004d3c;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 8px;
+  }
+  
+  .tree {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+  }
+  
+  .projectItem {
+    margin-bottom: 4px;
+  }
+  
+  .projectNode, .phaseNode, .actionItem {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  
+  .projectNode:hover, .phaseNode:hover {
+    background-color: #f0f9f6;
+  }
+  
+  .actionItem:hover {
+    background-color: #e6f7f1;
+  }
+  
+  .phaseContainer {
+    padding-left: 24px;
+    margin-top: 4px;
+  }
+  
+  .actionContainer {
+    padding-left: 24px;
+    margin-top: 4px;
+  }
+  
+  .icon {
+    margin-right: 8px;
+    stroke-width: 2px;
+  }
+  
+  .activeProject {
+    color: #00a07a;
+    font-weight: 600;
+  }
+  
+  .closedProject {
+    color: #888;
+    font-weight: 400;
+    text-decoration: line-through;
+  }
+  
+  .loading, .error, .empty {
+    text-align: center;
+    padding: 20px;
+    color: #555;
+  }
+  
+  .error {
+    color: #d22;
+  }
+  
+  /* Modal Styles */
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 16px;
+  }
+  
+  .modalHeader h3 {
+    margin: 0;
+    color: #004d3c;
+  }
+  
+  .closeButton {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .modalContent {
+    padding: 16px;
+  }
+  
+  .formGroup {
+    margin-bottom: 16px;
+  }
+  
+  .formGroup label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  
+  .formGroup input[type="text"],
+  .formGroup input[type="date"],
+  .formGroup textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+  }
+  
+  .formGroup textarea {
+    min-height: 80px;
+  }
+  
+  .arrayInput, .milestoneInput {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+  
+  .milestoneInput {
+    flex-wrap: wrap;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+  
+  .milestoneInput > div {
+    flex: 1;
+    min-width: 150px;
+  }
+  
+  .modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .modalActions button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+  }
+  
+  .primaryButton {
+    background-color: #00a07a;
+    color: white;
+  }
+  
+  .primaryButton:hover {
+    background-color: #008a69;
+  }
