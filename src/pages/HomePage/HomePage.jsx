@@ -1,5 +1,6 @@
 import WelcomeSection from "../../components/WelcomeSection/WelcomeSection";
 import UserInfo from "../../components/UserInfo/UserInfo";
+import ProjectFileTree from "../../components/ProjectFileTree/ProjectFileTree";
 import ProjectDashboard from "../../components/ProjectDashboard/ProjectDashboard";
 import css from "./HomePage.module.css";
 
@@ -8,7 +9,7 @@ export default function HomePage() {
     <div className={css.page}>
       <div className={css.container}>
         <WelcomeSection />
-        
+        <ProjectFileTree />
       </div>
     </div>
   );
