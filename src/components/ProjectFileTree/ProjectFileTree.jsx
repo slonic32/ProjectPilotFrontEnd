@@ -69,8 +69,9 @@ const [createWBSModal, setCreateWBSModal] = useState(false);
 const [newWorkItem, setNewWorkItem] = useState({
   name: "",
   description: "",
-  work: [], // Parent work items
-  deliverable: "" // Selected deliverable ID
+  work: [],
+  deliverable: "",
+  project: "" // This will be set when creating the item
 });
 
 const [availableWorkItems, setAvailableWorkItems] = useState([]);
@@ -97,11 +98,24 @@ const [costManagementForm, setCostManagementForm] = useState({
   }
 });
 
+
+const [availableActivities, setAvailableActivities] = useState([]);
+const [newActivity, setNewActivity] = useState({
+  workPackage: "",
+  name: "",
+  initialScopeDescription: "",
+  detailedScopeDescription: "",
+  predecessorActivities: [],
+  resourceRequirements: [],
+  duration: 0,
+  project: ""
+});
+
 const [costEstimateModal, setCostEstimateModal] = useState(false);
 const [costEstimateForm, setCostEstimateForm] = useState({
   costEstimates: [
     {
-      activity: "",
+      activityId: "", // Store the activity ID instead of embedding activity data
       labor: [{ name: "", cost: 0 }],
       materials: [{ name: "", cost: 0 }],
       equipment: [{ name: "", cost: 0 }],
@@ -113,6 +127,164 @@ const [costEstimateForm, setCostEstimateForm] = useState({
     }
   ]
 });
+
+// Fetch activities when opening the modal
+const openCostEstimateModal = async (projectId) => {
+  setSelectedProjectId(projectId);
+  setCostEstimateModal(true);
+  await fetchActivities(projectId);
+  await fetchWorkItems(projectId); 
+};
+
+// Function to fetch activities
+const fetchActivities = async (projectId) => {
+  try {
+    const response = await axios.get(`/activities/${projectId}`);
+    // Make sure we always have an array
+    const activitiesArray = Array.isArray(response.data) 
+      ? response.data 
+      : (response.data?.activities || []);
+    
+    console.log("Activities data:", response.data); // For debugging
+    setAvailableActivities(activitiesArray);
+  } catch (error) {
+    console.error("Failed to fetch activities:", error);
+    alert("Failed to fetch activities. Please try again.");
+    // Make sure we have an empty array on error
+    setAvailableActivities([]);
+  }
+};
+
+// Function to create a new activity
+const createActivity = async () => {
+  if (!newActivity.name.trim()) {
+    alert("Activity name is required");
+    return;
+  }
+
+  if (!newActivity.workPackage) {
+    alert("Work package is required");
+    return;
+  }
+  
+  try {
+    const activityData = {
+      ...newActivity,
+      project: selectedProjectId
+    };
+    
+    const response = await axios.post('/activities', activityData);
+    console.log("Created activity:", response.data);
+    
+    // Add new activity to available activities
+    setAvailableActivities(prev => [...prev, response.data]);
+    
+    // Reset new activity form
+    setNewActivity({
+      workPackage: "",
+      name: "",
+      initialScopeDescription: "",
+      detailedScopeDescription: "",
+      predecessorActivities: [],
+      resourceRequirements: [],
+      duration: 0,
+      project: ""
+    });
+    
+    alert("Activity created successfully!");
+  } catch (error) {
+    console.error("Failed to create activity:", error);
+    alert("Failed to create activity. Please try again.");
+  }
+};
+
+// Function to delete an activity
+const deleteActivity = async (activityId) => {
+  try {
+    await axios.delete(`/activities/${activityId}`);
+    
+    // Remove from available activities
+    setAvailableActivities(prev => prev.filter(a => a._id !== activityId));
+    
+    // Remove from cost estimates if it's there
+    setCostEstimateForm(prev => ({
+      ...prev,
+      costEstimates: prev.costEstimates.filter(estimate => estimate.activityId !== activityId)
+    }));
+    
+  } catch (error) {
+    console.error("Failed to delete activity:", error);
+    alert("Failed to delete activity. Please try again.");
+  }
+};
+
+const handleNewActivityChange = (field, value) => {
+  setNewActivity(prev => ({
+    ...prev,
+    [field]: value
+  }));
+};
+
+// Update the handle changes to activity selection
+const handleActivitySelection = (estimateIndex, activityId) => {
+  setCostEstimateForm(prev => {
+    const newEstimates = [...prev.costEstimates];
+    newEstimates[estimateIndex].activityId = activityId;
+    return {
+      ...prev,
+      costEstimates: newEstimates
+    };
+  });
+};
+
+// Modified estimate cost function to work with activity IDs
+const handleEstimateCost = async () => {
+  try {
+    // Calculate total costs for each activity before submitting
+    const formData = {
+      costEstimates: costEstimateForm.costEstimates.map(estimate => {
+        const laborCost = estimate.labor.reduce((sum, item) => sum + Number(item.cost), 0);
+        const materialsCost = estimate.materials.reduce((sum, item) => sum + Number(item.cost), 0);
+        const equipmentCost = estimate.equipment.reduce((sum, item) => sum + Number(item.cost), 0);
+        const facilitiesCost = estimate.facilities.reduce((sum, item) => sum + Number(item.cost), 0);
+        const subcontractorCost = estimate.subcontractor.reduce((sum, item) => sum + Number(item.cost), 0);
+        const travelCost = estimate.travel.reduce((sum, item) => sum + Number(item.cost), 0);
+        const reserveCost = estimate.reserve.reduce((sum, item) => sum + Number(item.cost), 0);
+        
+        const totalCost = laborCost + materialsCost + equipmentCost + 
+                        facilitiesCost + subcontractorCost + travelCost + reserveCost;
+        
+        return {
+          ...estimate,
+          costOfActivity: totalCost
+        };
+      })
+    };
+
+    await axios.patch(
+      `/projects/${selectedProjectId}/planning/cost/estimateCost`,
+      formData
+    );
+    setCostEstimateModal(false);
+    alert("Cost estimates updated successfully!");
+  } catch (error) {
+    console.error("Failed to update cost estimates:", error);
+    console.error("Error details:", error.response?.data);
+    alert("Failed to update cost estimates. Please try again.");
+  }
+};
+
+// Remove a cost estimate
+const removeEstimate = (estimateIndex) => {
+  setCostEstimateForm(prev => {
+    const newEstimates = [...prev.costEstimates];
+    newEstimates.splice(estimateIndex, 1);
+    return {
+      ...prev,
+      costEstimates: newEstimates
+    };
+  });
+};
 
 const [determineBudgetModal, setDetermineBudgetModal] = useState(false);
 const [determineBudgetForm, setDetermineBudgetForm] = useState({
@@ -702,50 +874,7 @@ const removeCostManagementItem = (field, index) => {
   });
 };
 
-const openCostEstimateModal = (projectId) => {
-  setSelectedProjectId(projectId);
-  setCostEstimateModal(true);
-};
 
-// Fix this function to ensure proper formatting
-const handleEstimateCost = async () => {
-  try {
-    // Calculate total costs for each activity before submitting
-    const formData = {
-      costEstimates: costEstimateForm.costEstimates.map(activity => {
-        // Calculate the sum of all costs in all categories
-        const laborCost = activity.labor.reduce((sum, item) => sum + Number(item.cost), 0);
-        const materialsCost = activity.materials.reduce((sum, item) => sum + Number(item.cost), 0);
-        const equipmentCost = activity.equipment.reduce((sum, item) => sum + Number(item.cost), 0);
-        const facilitiesCost = activity.facilities.reduce((sum, item) => sum + Number(item.cost), 0);
-        const subcontractorCost = activity.subcontractor.reduce((sum, item) => sum + Number(item.cost), 0);
-        const travelCost = activity.travel.reduce((sum, item) => sum + Number(item.cost), 0);
-        const reserveCost = activity.reserve.reduce((sum, item) => sum + Number(item.cost), 0);
-        
-        const totalCost = laborCost + materialsCost + equipmentCost + 
-                         facilitiesCost + subcontractorCost + travelCost + reserveCost;
-        
-        return {
-          ...activity,
-          costOfActivity: totalCost
-        };
-      })
-    };
-
-    console.log("Sending request:", JSON.stringify(formData, null, 2)); // Add this to debug
-
-    await axios.patch(
-      `/projects/${selectedProjectId}/planning/cost/estimateCost`,
-      formData
-    );
-    setCostEstimateModal(false);
-    alert("Cost estimates updated successfully!");
-  } catch (error) {
-    console.error("Failed to update cost estimates:", error);
-    console.error("Error details:", error.response?.data); // Add this to see server error details
-    alert("Failed to update cost estimates. Please try again.");
-  }
-};
 
 // Handle changes to activity name
 const handleActivityChange = (activityIndex, value) => {
@@ -2314,418 +2443,464 @@ const removeResourceRequirement = (index) => {
               </form>
             </Modal>
             {/* Estimate Cost Modal */}
-            <Modal 
-              isOpen={costEstimateModal} 
-              onClose={() => setCostEstimateModal(false)} 
-              title="Estimate Activity Cost"
+           <Modal 
+  isOpen={costEstimateModal} 
+  onClose={() => setCostEstimateModal(false)} 
+  title="Estimate Activity Cost"
+>
+  <form onSubmit={(e) => { e.preventDefault(); handleEstimateCost(); }}>
+    {/* Activity Creation Section */}
+    <div className={css.formGroup}>
+      <h4>Create New Activity</h4>
+      <div className={css.formGroup}>
+        <label>Activity Name</label>
+        <input 
+          type="text" 
+          value={newActivity.name} 
+          onChange={(e) => handleNewActivityChange('name', e.target.value)}
+          placeholder="Enter activity name"
+          className={css.inputField}
+        />
+      </div>
+      
+      <div className={css.formGroup}>
+        <label>Work Package</label>
+        <select
+          value={newActivity.workPackage}
+          onChange={(e) => handleNewActivityChange('workPackage', e.target.value)}
+          className={css.selectField}
+          required
+        >
+          <option value="">Select a work package</option>
+          {Array.isArray(availableWorkItems) && availableWorkItems.map(work => (
+            <option key={work._id} value={work._id}>
+              {work.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      
+      <div className={css.formGroup}>
+        <label>Initial Scope Description</label>
+        <textarea 
+          value={newActivity.initialScopeDescription} 
+          onChange={(e) => handleNewActivityChange('initialScopeDescription', e.target.value)}
+          placeholder="Enter initial scope description"
+          className={css.textareaField}
+        />
+      </div>
+      
+      <div className={css.formGroup}>
+        <label>Detailed Scope Description</label>
+        <textarea 
+          value={newActivity.detailedScopeDescription} 
+          onChange={(e) => handleNewActivityChange('detailedScopeDescription', e.target.value)}
+          placeholder="Enter detailed scope description"
+          className={css.textareaField}
+        />
+      </div>
+      
+      <div className={css.formGroup}>
+        <label>Duration (days)</label>
+        <input 
+          type="number" 
+          value={newActivity.duration} 
+          onChange={(e) => handleNewActivityChange('duration', e.target.value)}
+          placeholder="Enter duration"
+          className={css.inputField}
+        />
+      </div>
+      
+      <button 
+        type="button" 
+        onClick={createActivity}
+        className={css.addButton}
+        disabled={!newActivity.name || !newActivity.workPackage}
+      >
+        Create Activity
+      </button>
+    </div>
+    
+    <hr className={css.sectionDivider} />
+
+    {/* Cost Estimation Section */}
+    <div className={css.costEstimateContainer}>
+      {costEstimateForm.costEstimates.map((estimate, estimateIndex) => (
+        <div key={`estimate-${estimateIndex}`} className={css.activityEstimate}>
+          <h4>Cost Estimate {estimateIndex + 1}</h4>
+          
+          <div className={css.formGroup}>
+            <label>Select Activity</label>
+            <select
+              value={estimate.activityId}
+              onChange={(e) => handleActivitySelection(estimateIndex, e.target.value)}
+              className={css.selectField}
             >
-              <form onSubmit={(e) => { e.preventDefault(); handleEstimateCost(); }}>
-                <div className={css.costEstimateContainer}>
-                  {costEstimateForm.costEstimates.map((activity, activityIndex) => (
-                    <div key={`activity-${activityIndex}`} className={css.activityEstimate}>
-                      <h4>Activity {activityIndex + 1}</h4>
-                      
-                      <div className={css.formGroup}>
-                        <label>Activity Name</label>
-                        <input 
-                          type="text" 
-                          value={activity.activity} 
-                          onChange={(e) => handleActivityChange(activityIndex, e.target.value)} 
-                          placeholder="Enter activity name"
-                          required
-                        />
-                      </div>
-                      
-                      {/* Labor Costs */}
-                      <div className={css.costCategory}>
-                        <h5>Labor</h5>
-                        {activity.labor.map((item, itemIndex) => (
-                          <div key={`labor-${itemIndex}`} className={css.costItemRow}>
-                            <input 
-                              type="text" 
-                              value={item.name} 
-                              onChange={(e) => handleCostItemChange(activityIndex, 'labor', itemIndex, 'name', e.target.value)}
-                              placeholder="Labor description"
-                              required
-                              className={css.costItemName}
-                            />
-                            <input 
-                              type="number" 
-                              value={item.cost} 
-                              onChange={(e) => handleCostItemChange(activityIndex, 'labor', itemIndex, 'cost', e.target.value)}
-                              placeholder="Cost"
-                              required
-                              className={css.costItemValue}
-                            />
-                            {activity.labor.length > 1 && (
-                              <button 
-                                type="button" 
-                                onClick={() => removeCostItem(activityIndex, 'labor', itemIndex)}
-                                className={css.removeCostItemBtn}
-                              >
-                                Remove
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                        <button 
-                          type="button" 
-                          onClick={() => addCostItem(activityIndex, 'labor')}
-                          className={css.addButton}
-                        >
-                          Add Labor Cost
-                        </button>
-                      </div>
-                      
-                      {/* Materials Costs */}
-                      <div className={css.costCategory}>
-                        <h5>Materials</h5>
-                        {activity.materials.map((item, itemIndex) => (
-                          <div key={`materials-${itemIndex}`} className={css.costItemRow}>
-                            <input 
-                              type="text" 
-                              value={item.name} 
-                              onChange={(e) => handleCostItemChange(activityIndex, 'materials', itemIndex, 'name', e.target.value)}
-                              placeholder="Material description"
-                              required
-                              className={css.costItemName}
-                            />
-                            <input 
-                              type="number" 
-                              value={item.cost} 
-                              onChange={(e) => handleCostItemChange(activityIndex, 'materials', itemIndex, 'cost', e.target.value)}
-                              placeholder="Cost"
-                              required
-                              className={css.costItemValue}
-                            />
-                            {activity.materials.length > 1 && (
-                              <button 
-                                type="button" 
-                                onClick={() => removeCostItem(activityIndex, 'materials', itemIndex)}
-                                className={css.removeCostItemBtn}
-                              >
-                                Remove
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                        <button 
-                          type="button" 
-                          onClick={() => addCostItem(activityIndex, 'materials')}
-                          className={css.addButton}
-                        >
-                          Add Material Cost
-                        </button>
-                      </div>
-                      
-                      {/* Equipment Costs */}
-                      <div className={css.costCategory}>
-                        <h5>Equipment</h5>
-                        {activity.equipment.map((item, itemIndex) => (
-                          <div key={`equipment-${itemIndex}`} className={css.costItemRow}>
-                            <input 
-                              type="text" 
-                              value={item.name} 
-                              onChange={(e) => handleCostItemChange(activityIndex, 'equipment', itemIndex, 'name', e.target.value)}
-                              placeholder="Equipment description"
-                              required
-                              className={css.costItemName}
-                            />
-                            <input 
-                              type="number" 
-                              value={item.cost} 
-                              onChange={(e) => handleCostItemChange(activityIndex, 'equipment', itemIndex, 'cost', e.target.value)}
-                              placeholder="Cost"
-                              required
-                              className={css.costItemValue}
-                            />
-                            {activity.equipment.length > 1 && (
-                              <button 
-                                type="button" 
-                                onClick={() => removeCostItem(activityIndex, 'equipment', itemIndex)}
-                                className={css.removeCostItemBtn}
-                              >
-                                Remove
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                        <button 
-                          type="button" 
-                          onClick={() => addCostItem(activityIndex, 'equipment')}
-                          className={css.addButton}
-                        >
-                          Add Equipment Cost
-                        </button>
-                      </div>
-                    {/* Facilities Costs */}
-                    <div className={css.costCategory}>
-                      <h5>Facilities</h5>
-                      {activity.facilities.map((item, itemIndex) => (
-                        <div key={`facilities-${itemIndex}`} className={css.costItemRow}>
-                          <input 
-                            type="text" 
-                            value={item.name} 
-                            onChange={(e) => handleCostItemChange(activityIndex, 'facilities', itemIndex, 'name', e.target.value)}
-                            placeholder="Facilities description"
-                            required
-                            className={css.costItemName}
-                          />
-                          <input 
-                            type="number" 
-                            value={item.cost} 
-                            onChange={(e) => handleCostItemChange(activityIndex, 'facilities', itemIndex, 'cost', e.target.value)}
-                            placeholder="Cost"
-                            required
-                            className={css.costItemValue}
-                          />
-                          {activity.facilities.length > 1 && (
-                            <button 
-                              type="button" 
-                              onClick={() => removeCostItem(activityIndex, 'facilities', itemIndex)}
-                              className={css.removeCostItemBtn}
-                            >
-                              Remove
-                            </button>
-                          )}
-                        </div>
-                      ))}
+              <option value="">Select an activity</option>
+              {Array.isArray(availableActivities) && availableActivities.map(activity => (
+                <option key={activity._id} value={activity._id}>
+                  {activity.name}
+                </option>
+              ))}
+            </select>
+            
+            {estimate.activityId && (
+              <div className={css.selectedActivityDetails}>
+                <small>
+                  <strong>Selected Activity:</strong> {Array.isArray(availableActivities) && availableActivities.find(a => a._id === estimate.activityId)?.name}
+                </small>
+                <button 
+                  type="button" 
+                  onClick={() => deleteActivity(estimate.activityId)}
+                  className={css.deleteButton}
+                >
+                  Delete Activity
+                </button>
+              </div>
+            )}
+          </div>
+          
+          {/* Only show cost categories if an activity is selected */}
+          {estimate.activityId && (
+            <>
+              {/* Labor Costs */}
+              <div className={css.costCategory}>
+                <h5>Labor</h5>
+                {estimate.labor.map((item, itemIndex) => (
+                  <div key={`labor-${itemIndex}`} className={css.costItemRow}>
+                    <input 
+                      type="text" 
+                      value={item.name} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'labor', itemIndex, 'name', e.target.value)}
+                      placeholder="Labor description"
+                      required
+                      className={css.costItemName}
+                    />
+                    <input 
+                      type="number" 
+                      value={item.cost} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'labor', itemIndex, 'cost', e.target.value)}
+                      placeholder="Cost"
+                      required
+                      className={css.costItemValue}
+                    />
+                    {estimate.labor.length > 1 && (
                       <button 
                         type="button" 
-                        onClick={() => addCostItem(activityIndex, 'facilities')}
-                        className={css.addButton}
+                        onClick={() => removeCostItem(estimateIndex, 'labor', itemIndex)}
+                        className={css.removeCostItemBtn}
                       >
-                        Add Facilities Cost
+                        Remove
                       </button>
-                    </div>
-
-                    {/* Subcontractor Costs */}
-                    <div className={css.costCategory}>
-                      <h5>Subcontractor</h5>
-                      {activity.subcontractor.map((item, itemIndex) => (
-                        <div key={`subcontractor-${itemIndex}`} className={css.costItemRow}>
-                          <input 
-                            type="text" 
-                            value={item.name} 
-                            onChange={(e) => handleCostItemChange(activityIndex, 'subcontractor', itemIndex, 'name', e.target.value)}
-                            placeholder="Subcontractor description"
-                            required
-                            className={css.costItemName}
-                          />
-                          <input 
-                            type="number" 
-                            value={item.cost} 
-                            onChange={(e) => handleCostItemChange(activityIndex, 'subcontractor', itemIndex, 'cost', e.target.value)}
-                            placeholder="Cost"
-                            required
-                            className={css.costItemValue}
-                          />
-                          {activity.subcontractor.length > 1 && (
-                            <button 
-                              type="button" 
-                              onClick={() => removeCostItem(activityIndex, 'subcontractor', itemIndex)}
-                              className={css.removeCostItemBtn}
-                            >
-                              Remove
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                      <button 
-                        type="button" 
-                        onClick={() => addCostItem(activityIndex, 'subcontractor')}
-                        className={css.addButton}
-                      >
-                        Add Subcontractor Cost
-                      </button>
-                    </div>
-
-                    {/* Travel Costs */}
-                    <div className={css.costCategory}>
-                      <h5>Travel</h5>
-                      {activity.travel.map((item, itemIndex) => (
-                        <div key={`travel-${itemIndex}`} className={css.costItemRow}>
-                          <input 
-                            type="text" 
-                            value={item.name} 
-                            onChange={(e) => handleCostItemChange(activityIndex, 'travel', itemIndex, 'name', e.target.value)}
-                            placeholder="Travel description"
-                            required
-                            className={css.costItemName}
-                          />
-                          <input 
-                            type="number" 
-                            value={item.cost} 
-                            onChange={(e) => handleCostItemChange(activityIndex, 'travel', itemIndex, 'cost', e.target.value)}
-                            placeholder="Cost"
-                            required
-                            className={css.costItemValue}
-                          />
-                          {activity.travel.length > 1 && (
-                            <button 
-                              type="button" 
-                              onClick={() => removeCostItem(activityIndex, 'travel', itemIndex)}
-                              className={css.removeCostItemBtn}
-                            >
-                              Remove
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                      <button 
-                        type="button" 
-                        onClick={() => addCostItem(activityIndex, 'travel')}
-                        className={css.addButton}
-                      >
-                        Add Travel Cost
-                      </button>
-                    </div>
-
-                    {/* Reserve Costs */}
-                    <div className={css.costCategory}>
-                      <h5>Reserve</h5>
-                      {activity.reserve.map((item, itemIndex) => (
-                        <div key={`reserve-${itemIndex}`} className={css.costItemRow}>
-                          <input 
-                            type="text" 
-                            value={item.name} 
-                            onChange={(e) => handleCostItemChange(activityIndex, 'reserve', itemIndex, 'name', e.target.value)}
-                            placeholder="Reserve description"
-                            required
-                            className={css.costItemName}
-                          />
-                          <input 
-                            type="number" 
-                            value={item.cost} 
-                            onChange={(e) => handleCostItemChange(activityIndex, 'reserve', itemIndex, 'cost', e.target.value)}
-                            placeholder="Cost"
-                            required
-                            className={css.costItemValue}
-                          />
-                          {activity.reserve.length > 1 && (
-                            <button 
-                              type="button" 
-                              onClick={() => removeCostItem(activityIndex, 'reserve', itemIndex)}
-                              className={css.removeCostItemBtn}
-                            >
-                              Remove
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                      <button 
-                        type="button" 
-                        onClick={() => addCostItem(activityIndex, 'reserve')}
-                        className={css.addButton}
-                      >
-                        Add Reserve Cost
-                      </button>
-                    </div>
-                      <div className={css.totalCost}>
-                        <strong>Total Activity Cost:</strong> {calculateActivityCost(activity)}
-                      </div>
-                      
-                      {costEstimateForm.costEstimates.length > 1 && (
-                        <button 
-                          type="button" 
-                          onClick={() => removeActivity(activityIndex)}
-                          className={css.removeActivityBtn}
-                        >
-                          Remove Activity
-                        </button>
-                      )}
-                      
-                      <hr className={activityIndex < costEstimateForm.costEstimates.length - 1 ? css.activityDivider : css.hidden} />
-                    </div>
-                  ))}
-                  
-                  <button 
-                    type="button" 
-                    onClick={addActivity}
-                    className={css.addButton}
-                  >
-                    Add Activity
-                  </button>
-                  
-                  <div className={css.modalActions}>
-                    <button type="button" onClick={() => setCostEstimateModal(false)}>Cancel</button>
-                    <button type="submit" className={css.primaryButton}>Update Cost Estimates</button>
+                    )}
                   </div>
-                </div>
-              </form>
-            </Modal>
-            {/* Determine Budget Modal */}
-            <Modal 
-              isOpen={determineBudgetModal} 
-              onClose={() => setDetermineBudgetModal(false)} 
-              title="Determine Budget"
+                ))}
+                <button 
+                  type="button" 
+                  onClick={() => addCostItem(estimateIndex, 'labor')}
+                  className={css.addButton}
+                >
+                  Add Labor Cost
+                </button>
+              </div>
+              
+              {/* Materials Costs */}
+              <div className={css.costCategory}>
+                <h5>Materials</h5>
+                {estimate.materials.map((item, itemIndex) => (
+                  <div key={`materials-${itemIndex}`} className={css.costItemRow}>
+                    <input 
+                      type="text" 
+                      value={item.name} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'materials', itemIndex, 'name', e.target.value)}
+                      placeholder="Material description"
+                      required
+                      className={css.costItemName}
+                    />
+                    <input 
+                      type="number" 
+                      value={item.cost} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'materials', itemIndex, 'cost', e.target.value)}
+                      placeholder="Cost"
+                      required
+                      className={css.costItemValue}
+                    />
+                    {estimate.materials.length > 1 && (
+                      <button 
+                        type="button" 
+                        onClick={() => removeCostItem(estimateIndex, 'materials', itemIndex)}
+                        className={css.removeCostItemBtn}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button 
+                  type="button" 
+                  onClick={() => addCostItem(estimateIndex, 'materials')}
+                  className={css.addButton}
+                >
+                  Add Material Cost
+                </button>
+              </div>
+              
+              {/* Equipment Costs */}
+              <div className={css.costCategory}>
+                <h5>Equipment</h5>
+                {estimate.equipment.map((item, itemIndex) => (
+                  <div key={`equipment-${itemIndex}`} className={css.costItemRow}>
+                    <input 
+                      type="text" 
+                      value={item.name} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'equipment', itemIndex, 'name', e.target.value)}
+                      placeholder="Equipment description"
+                      required
+                      className={css.costItemName}
+                    />
+                    <input 
+                      type="number" 
+                      value={item.cost} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'equipment', itemIndex, 'cost', e.target.value)}
+                      placeholder="Cost"
+                      required
+                      className={css.costItemValue}
+                    />
+                    {estimate.equipment.length > 1 && (
+                      <button 
+                        type="button" 
+                        onClick={() => removeCostItem(estimateIndex, 'equipment', itemIndex)}
+                        className={css.removeCostItemBtn}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button 
+                  type="button" 
+                  onClick={() => addCostItem(estimateIndex, 'equipment')}
+                  className={css.addButton}
+                >
+                  Add Equipment Cost
+                </button>
+              </div>
+              
+              {/* Facilities Costs */}
+              <div className={css.costCategory}>
+                <h5>Facilities</h5>
+                {estimate.facilities.map((item, itemIndex) => (
+                  <div key={`facilities-${itemIndex}`} className={css.costItemRow}>
+                    <input 
+                      type="text" 
+                      value={item.name} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'facilities', itemIndex, 'name', e.target.value)}
+                      placeholder="Facilities description"
+                      required
+                      className={css.costItemName}
+                    />
+                    <input 
+                      type="number" 
+                      value={item.cost} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'facilities', itemIndex, 'cost', e.target.value)}
+                      placeholder="Cost"
+                      required
+                      className={css.costItemValue}
+                    />
+                    {estimate.facilities.length > 1 && (
+                      <button 
+                        type="button" 
+                        onClick={() => removeCostItem(estimateIndex, 'facilities', itemIndex)}
+                        className={css.removeCostItemBtn}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button 
+                  type="button" 
+                  onClick={() => addCostItem(estimateIndex, 'facilities')}
+                  className={css.addButton}
+                >
+                  Add Facilities Cost
+                </button>
+              </div>
+
+              {/* Subcontractor Costs */}
+              <div className={css.costCategory}>
+                <h5>Subcontractor</h5>
+                {estimate.subcontractor.map((item, itemIndex) => (
+                  <div key={`subcontractor-${itemIndex}`} className={css.costItemRow}>
+                    <input 
+                      type="text" 
+                      value={item.name} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'subcontractor', itemIndex, 'name', e.target.value)}
+                      placeholder="Subcontractor description"
+                      required
+                      className={css.costItemName}
+                    />
+                    <input 
+                      type="number" 
+                      value={item.cost} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'subcontractor', itemIndex, 'cost', e.target.value)}
+                      placeholder="Cost"
+                      required
+                      className={css.costItemValue}
+                    />
+                    {estimate.subcontractor.length > 1 && (
+                      <button 
+                        type="button" 
+                        onClick={() => removeCostItem(estimateIndex, 'subcontractor', itemIndex)}
+                        className={css.removeCostItemBtn}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button 
+                  type="button" 
+                  onClick={() => addCostItem(estimateIndex, 'subcontractor')}
+                  className={css.addButton}
+                >
+                  Add Subcontractor Cost
+                </button>
+              </div>
+
+              {/* Travel Costs */}
+              <div className={css.costCategory}>
+                <h5>Travel</h5>
+                {estimate.travel.map((item, itemIndex) => (
+                  <div key={`travel-${itemIndex}`} className={css.costItemRow}>
+                    <input 
+                      type="text" 
+                      value={item.name} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'travel', itemIndex, 'name', e.target.value)}
+                      placeholder="Travel description"
+                      required
+                      className={css.costItemName}
+                    />
+                    <input 
+                      type="number" 
+                      value={item.cost} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'travel', itemIndex, 'cost', e.target.value)}
+                      placeholder="Cost"
+                      required
+                      className={css.costItemValue}
+                    />
+                    {estimate.travel.length > 1 && (
+                      <button 
+                        type="button" 
+                        onClick={() => removeCostItem(estimateIndex, 'travel', itemIndex)}
+                        className={css.removeCostItemBtn}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button 
+                  type="button" 
+                  onClick={() => addCostItem(estimateIndex, 'travel')}
+                  className={css.addButton}
+                >
+                  Add Travel Cost
+                </button>
+              </div>
+
+              {/* Reserve Costs */}
+              <div className={css.costCategory}>
+                <h5>Reserve</h5>
+                {estimate.reserve.map((item, itemIndex) => (
+                  <div key={`reserve-${itemIndex}`} className={css.costItemRow}>
+                    <input 
+                      type="text" 
+                      value={item.name} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'reserve', itemIndex, 'name', e.target.value)}
+                      placeholder="Reserve description"
+                      required
+                      className={css.costItemName}
+                    />
+                    <input 
+                      type="number" 
+                      value={item.cost} 
+                      onChange={(e) => handleCostItemChange(estimateIndex, 'reserve', itemIndex, 'cost', e.target.value)}
+                      placeholder="Cost"
+                      required
+                      className={css.costItemValue}
+                    />
+                    {estimate.reserve.length > 1 && (
+                      <button 
+                        type="button" 
+                        onClick={() => removeCostItem(estimateIndex, 'reserve', itemIndex)}
+                        className={css.removeCostItemBtn}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button 
+                  type="button" 
+                  onClick={() => addCostItem(estimateIndex, 'reserve')}
+                  className={css.addButton}
+                >
+                  Add Reserve Cost
+                </button>
+              </div>
+              
+              <div className={css.totalCost}>
+                <strong>Total Activity Cost:</strong> {calculateActivityCost(estimate)}
+              </div>
+            </>
+          )}
+          
+          {costEstimateForm.costEstimates.length > 1 && (
+            <button 
+              type="button" 
+              onClick={() => removeEstimate(estimateIndex)}
+              className={css.removeEstimateBtn}
             >
-              <form onSubmit={(e) => { e.preventDefault(); handleDetermineBudget(); }}>
-                <div className={css.formGroup}>
-                  <label>Cost Baseline</label>
-                  <input 
-                    type="number" 
-                    value={determineBudgetForm.costBaseline} 
-                    onChange={(e) => handleCostBaselineChange(e.target.value)}
-                    placeholder="Enter cost baseline"
-                    required
-                  />
-                </div>
-                
-                <div className={css.formGroup}>
-                  <h4>Project Funding Requirements</h4>
-                  {determineBudgetForm.projectFundingRequirements.map((item, index) => (
-                    <div key={`funding-${index}`} className={css.fundingRequirement}>
-                      <div className={css.fundingRequirementRow}>
-                        <div>
-                          <label>Period</label>
-                          <input 
-                            type="text" 
-                            value={item.period} 
-                            onChange={(e) => handleFundingRequirementChange(index, 'period', e.target.value)}
-                            placeholder="Enter period (e.g., Q1 2023)"
-                            required
-                            className={css.periodInput}
-                          />
-                        </div>
-                        <div>
-                          <label>Cost</label>
-                          <input 
-                            type="number" 
-                            value={item.cost} 
-                            onChange={(e) => handleFundingRequirementChange(index, 'cost', e.target.value)}
-                            placeholder="Enter cost"
-                            required
-                            className={css.costInput}
-                          />
-                        </div>
-                        {determineBudgetForm.projectFundingRequirements.length > 1 && (
-                          <button 
-                            type="button" 
-                            onClick={() => removeFundingRequirement(index)}
-                            className={css.removeBtn}
-                          >
-                            Remove
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  <button 
-                    type="button" 
-                    onClick={addFundingRequirement}
-                    className={css.addButton}
-                  >
-                    Add Funding Requirement
-                  </button>
-                </div>
-                
-                <div className={css.modalActions}>
-                  <button type="button" onClick={() => setDetermineBudgetModal(false)}>Cancel</button>
-                  <button type="submit" className={css.primaryButton}>Submit Budget</button>
-                </div>
-              </form>
-            </Modal>
+              Remove Cost Estimate
+            </button>
+          )}
+          
+          <hr className={estimateIndex < costEstimateForm.costEstimates.length - 1 ? css.activityDivider : css.hidden} />
+        </div>
+      ))}
+      
+      <button 
+        type="button" 
+        onClick={() => setCostEstimateForm(prev => ({
+          ...prev,
+          costEstimates: [
+            ...prev.costEstimates,
+            {
+              activityId: "",
+              labor: [{ name: "", cost: 0 }],
+              materials: [{ name: "", cost: 0 }],
+              equipment: [{ name: "", cost: 0 }],
+              facilities: [{ name: "", cost: 0 }],
+              subcontractor: [{ name: "", cost: 0 }],
+              travel: [{ name: "", cost: 0 }],
+              reserve: [{ name: "", cost: 0 }],
+              costOfActivity: 0
+            }
+          ]
+        }))}
+        className={css.addButton}
+      >
+        Add Cost Estimate
+      </button>
+      
+      <div className={css.modalActions}>
+        <button type="button" onClick={() => setCostEstimateModal(false)}>Cancel</button>
+        <button type="submit" className={css.primaryButton}>Update Cost Estimates</button>
+      </div>
+    </div>
+  </form>
+</Modal>
             {/* Plan Resource Management Modal */}
             <Modal 
               isOpen={resourceManagementModal} 

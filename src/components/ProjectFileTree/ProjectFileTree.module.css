@@ -233,3 +233,25 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+.sectionDivider {
+  margin: 20px 0;
+  border: 0;
+  height: 1px;
+  background-color: #ddd;
+}
+
+.selectField {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.selectedActivityDetails {
+  padding: 5px 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  margin-top: 5px;
+}
