@@ -115,7 +115,7 @@ const [costEstimateModal, setCostEstimateModal] = useState(false);
 const [costEstimateForm, setCostEstimateForm] = useState({
   costEstimates: [
     {
-      activityId: "", // Store the activity ID instead of embedding activity data
+      activity: "", // Store the activity ID instead of embedding activity data
       labor: [{ name: "", cost: 0 }],
       materials: [{ name: "", cost: 0 }],
       equipment: [{ name: "", cost: 0 }],
@@ -137,8 +137,12 @@ const openCostEstimateModal = async (projectId) => {
 };
 
 // Function to fetch activities
+const [activitiesLoading, setActivitiesLoading] = useState(false);
+
+// Then update fetchActivities function
 const fetchActivities = async (projectId) => {
   try {
+    setActivitiesLoading(true);
     const response = await axios.get(`/activities/${projectId}`);
     // Make sure we always have an array
     const activitiesArray = Array.isArray(response.data) 
@@ -152,8 +156,13 @@ const fetchActivities = async (projectId) => {
     alert("Failed to fetch activities. Please try again.");
     // Make sure we have an empty array on error
     setAvailableActivities([]);
+  } finally {
+    setActivitiesLoading(false);
   }
 };
+
+// And update the dropdown
+
 
 // Function to create a new activity
 const createActivity = async () => {
@@ -176,8 +185,7 @@ const createActivity = async () => {
     const response = await axios.post('/activities', activityData);
     console.log("Created activity:", response.data);
     
-    // Add new activity to available activities
-    setAvailableActivities(prev => [...prev, response.data]);
+    await fetchActivities(selectedProjectId);
     
     // Reset new activity form
     setNewActivity({
@@ -191,6 +199,16 @@ const createActivity = async () => {
       project: ""
     });
     
+    // Auto-select the newly created activity in the first estimate form
+    if (costEstimateForm.costEstimates.length > 0) {
+      const newEstimates = [...costEstimateForm.costEstimates];
+      newEstimates[0].activity = response.data._id;
+      setCostEstimateForm({
+        ...costEstimateForm,
+        costEstimates: newEstimates
+      });
+    }
+    
     alert("Activity created successfully!");
   } catch (error) {
     console.error("Failed to create activity:", error);
@@ -199,17 +217,17 @@ const createActivity = async () => {
 };
 
 // Function to delete an activity
-const deleteActivity = async (activityId) => {
+const deleteActivity = async (activity) => {
   try {
-    await axios.delete(`/activities/${activityId}`);
+    await axios.delete(`/activities/${activity}`);
     
     // Remove from available activities
-    setAvailableActivities(prev => prev.filter(a => a._id !== activityId));
+    setAvailableActivities(prev => prev.filter(a => a._id !== activity));
     
     // Remove from cost estimates if it's there
     setCostEstimateForm(prev => ({
       ...prev,
-      costEstimates: prev.costEstimates.filter(estimate => estimate.activityId !== activityId)
+      costEstimates: prev.costEstimates.filter(estimate => estimate.activity !== activity)
     }));
     
   } catch (error) {
@@ -226,10 +244,10 @@ const handleNewActivityChange = (field, value) => {
 };
 
 // Update the handle changes to activity selection
-const handleActivitySelection = (estimateIndex, activityId) => {
+const handleActivitySelection = (estimateIndex, activity) => {
   setCostEstimateForm(prev => {
     const newEstimates = [...prev.costEstimates];
-    newEstimates[estimateIndex].activityId = activityId;
+    newEstimates[estimateIndex].activity = activity;
     return {
       ...prev,
       costEstimates: newEstimates
@@ -2530,38 +2548,27 @@ const removeResourceRequirement = (index) => {
           <h4>Cost Estimate {estimateIndex + 1}</h4>
           
           <div className={css.formGroup}>
-            <label>Select Activity</label>
-            <select
-              value={estimate.activityId}
-              onChange={(e) => handleActivitySelection(estimateIndex, e.target.value)}
-              className={css.selectField}
-            >
-              <option value="">Select an activity</option>
-              {Array.isArray(availableActivities) && availableActivities.map(activity => (
-                <option key={activity._id} value={activity._id}>
-                  {activity.name}
-                </option>
-              ))}
-            </select>
-            
-            {estimate.activityId && (
-              <div className={css.selectedActivityDetails}>
-                <small>
-                  <strong>Selected Activity:</strong> {Array.isArray(availableActivities) && availableActivities.find(a => a._id === estimate.activityId)?.name}
-                </small>
-                <button 
-                  type="button" 
-                  onClick={() => deleteActivity(estimate.activityId)}
-                  className={css.deleteButton}
-                >
-                  Delete Activity
-                </button>
-              </div>
-            )}
-          </div>
+      <label>Select Activity</label>
+      <select
+        value={estimate.activity}
+        onChange={(e) => handleActivitySelection(estimateIndex, e.target.value)}
+        onClick={() => fetchActivities(selectedProjectId)}
+        onFocus={() => fetchActivities(selectedProjectId)}
+        className={css.selectField}
+      >
+        <option value="">
+          {activitiesLoading ? "Loading activities..." : "Select an activity"}
+        </option>
+        {!activitiesLoading && Array.isArray(availableActivities) && availableActivities.map(activity => (
+          <option key={activity._id} value={activity._id}>
+            {activity.name}
+          </option>
+        ))}
+      </select>
+    </div>
           
           {/* Only show cost categories if an activity is selected */}
-          {estimate.activityId && (
+          {estimate.activity && (
             <>
               {/* Labor Costs */}
               <div className={css.costCategory}>
@@ -2877,7 +2884,7 @@ const removeResourceRequirement = (index) => {
           costEstimates: [
             ...prev.costEstimates,
             {
-              activityId: "",
+              activity: "",
               labor: [{ name: "", cost: 0 }],
               materials: [{ name: "", cost: 0 }],
               equipment: [{ name: "", cost: 0 }],
