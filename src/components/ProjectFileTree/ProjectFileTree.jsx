@@ -47,13 +47,17 @@ export default function ProjectFileTree() {
       ]
     });
 
+    // Add these with your other state variables
+const [newDeliverable, setNewDeliverable] = useState({ name: "", description: "" });
+const [availableDeliverables, setAvailableDeliverables] = useState([]);
+
     const [defineScopeModal, setDefineScopeModal] = useState(false);
     const [defineScopeForm, setDefineScopeForm] = useState({
-      endProductScopeDescription: "",
-      deliverables: [""],
-      acceptanceCriteria: [""],
-      exclusions: [""]
-    });
+  endProductScopeDescription: "",
+  deliverables: [], // This will store deliverable IDs instead of strings
+  acceptanceCriteria: [""],
+  exclusions: [""]
+});
 
     const [createWBSModal, setCreateWBSModal] = useState(false);
     const [wbsForm, setWbsForm] = useState({
@@ -315,9 +319,90 @@ const removeRequirement = (index) => {
   });
 };
 
+// Add this function to fetch deliverables when opening the modal
+const fetchProjectDeliverables = async (projectId) => {
+  try {
+    const response = await axios.get(`/deliverables/all/${projectId}`);
+    setAvailableDeliverables(response.data || []);
+  } catch (error) {
+    console.error("Failed to fetch deliverables:", error);
+  }
+};
+
+// Update the openDefineScopeModal function to fetch deliverables
 const openDefineScopeModal = (projectId) => {
   setSelectedProjectId(projectId);
   setDefineScopeModal(true);
+  fetchProjectDeliverables(projectId); // Add this line
+};
+
+// Add function to create a new deliverable
+const createDeliverable = async () => {
+  if (!newDeliverable.name.trim()) {
+    alert("Deliverable name is required");
+    return;
+  }
+  
+  try {
+    const response = await axios.post('/deliverables/add', {
+      name: newDeliverable.name,
+      description: newDeliverable.description,
+      project: selectedProjectId
+    });
+    
+    // Add new deliverable to available list
+    setAvailableDeliverables(prev => [...prev, response.data]);
+    
+    // Clear form
+    setNewDeliverable({ name: "", description: "" });
+  } catch (error) {
+    console.error("Failed to create deliverable:", error);
+    alert("Failed to create deliverable. Please try again.");
+  }
+};
+
+// Add function to toggle deliverable selection
+const toggleDeliverable = (deliverableId) => {
+  setDefineScopeForm(prev => {
+    if (prev.deliverables.includes(deliverableId)) {
+      return {
+        ...prev,
+        deliverables: prev.deliverables.filter(id => id !== deliverableId)
+      };
+    } else {
+      return {
+        ...prev,
+        deliverables: [...prev.deliverables, deliverableId]
+      };
+    }
+  });
+};
+
+// Add function to delete a deliverable
+const deleteDeliverable = async (deliverableId) => {
+  try {
+    await axios.delete(`/deliverables/${deliverableId}`);
+    
+    // Remove from available list
+    setAvailableDeliverables(prev => prev.filter(d => d._id !== deliverableId));
+    
+    // Remove from selected if it's selected
+    setDefineScopeForm(prev => ({
+      ...prev,
+      deliverables: prev.deliverables.filter(id => id !== deliverableId)
+    }));
+  } catch (error) {
+    console.error("Failed to delete deliverable:", error);
+    alert("Failed to delete deliverable. Please try again.");
+  }
+};
+
+// Add handler for new deliverable form
+const handleNewDeliverableChange = (field, value) => {
+  setNewDeliverable(prev => ({
+    ...prev,
+    [field]: value
+  }));
 };
 
 const handleDefineScope = async () => {
@@ -711,6 +796,8 @@ const openResourceManagementModal = (projectId) => {
   setSelectedProjectId(projectId);
   setResourceManagementModal(true);
 };
+
+
 
 const handlePlanResourceManagement = async () => {
   try {
@@ -1606,118 +1693,157 @@ const removeResourceRequirement = (index) => {
         </Modal>
         {/* Define Scope Modal */}
           <Modal 
-            isOpen={defineScopeModal} 
-            onClose={() => setDefineScopeModal(false)} 
-            title="Define Scope"
-          >
-            <form onSubmit={(e) => { e.preventDefault(); handleDefineScope(); }}>
-              <div className={css.formGroup}>
-                <label>End Product Scope Description</label>
-                <textarea 
-                  name="endProductScopeDescription" 
-                  value={defineScopeForm.endProductScopeDescription} 
-                  onChange={handleDefineScopeTextChange} 
-                  placeholder="Describe the end product scope"
-                  required
-                />
+  isOpen={defineScopeModal} 
+  onClose={() => setDefineScopeModal(false)} 
+  title="Define Scope"
+>
+  <form onSubmit={(e) => { e.preventDefault(); handleDefineScope(); }}>
+    <div className={css.formGroup}>
+      <label>End Product Scope Description</label>
+      <textarea 
+        name="endProductScopeDescription" 
+        value={defineScopeForm.endProductScopeDescription} 
+        onChange={handleDefineScopeTextChange} 
+        placeholder="Describe the end product scope"
+        required
+      />
+    </div>
+    
+    {/* Deliverables Section - Updated to use API */}
+    <div className={css.formGroup}>
+      <h4>Deliverables</h4>
+      
+      {/* Create new deliverable form */}
+      <div className={css.newDeliverableForm}>
+        <h5>Create New Deliverable</h5>
+        <div className={css.formGroup}>
+          <label>Name</label>
+          <input 
+            type="text" 
+            value={newDeliverable.name} 
+            onChange={(e) => handleNewDeliverableChange('name', e.target.value)}
+            placeholder="Enter deliverable name"
+          />
+        </div>
+        <div className={css.formGroup}>
+          <label>Description</label>
+          <textarea 
+            value={newDeliverable.description} 
+            onChange={(e) => handleNewDeliverableChange('description', e.target.value)}
+            placeholder="Enter deliverable description"
+          />
+        </div>
+        <button 
+          type="button" 
+          onClick={createDeliverable}
+          className={css.addButton}
+        >
+          Create Deliverable
+        </button>
+      </div>
+      
+      {/* Select from existing deliverables */}
+      <div className={css.deliverablesListContainer}>
+        <h5>Select Deliverables for Scope</h5>
+        {availableDeliverables.length === 0 ? (
+          <p>No deliverables available. Create some using the form above.</p>
+        ) : (
+          <div className={css.deliverablesList}>
+            {availableDeliverables.map(deliverable => (
+              <div key={deliverable._id} className={css.deliverableItem}>
+                <label className={css.checkboxItem}>
+                  <input 
+                    type="checkbox" 
+                    checked={defineScopeForm.deliverables.includes(deliverable._id)} 
+                    onChange={() => toggleDeliverable(deliverable._id)} 
+                  />
+                  <span>{deliverable.name}</span>
+                </label>
+                <div>
+                  <button 
+                    type="button" 
+                    onClick={() => deleteDeliverable(deliverable._id)}
+                    className={css.deleteButton}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-              
-              <div className={css.formGroup}>
-                <h4>Deliverables</h4>
-                {defineScopeForm.deliverables.map((item, index) => (
-                  <div key={`deliverable-${index}`} className={css.arrayInput}>
-                    <input 
-                      type="text" 
-                      value={item} 
-                      onChange={(e) => handleDefineScopeArrayChange('deliverables', index, e.target.value)} 
-                      placeholder="Enter deliverable"
-                      required
-                    />
-                    {defineScopeForm.deliverables.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => removeDefineScopeItem('deliverables', index)}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button 
-                  type="button" 
-                  className={css.addButton}
-                  onClick={() => addDefineScopeItem('deliverables')}
-                >
-                  Add Deliverable
-                </button>
-              </div>
-              
-              <div className={css.formGroup}>
-                <h4>Acceptance Criteria</h4>
-                {defineScopeForm.acceptanceCriteria.map((item, index) => (
-                  <div key={`criteria-${index}`} className={css.arrayInput}>
-                    <input 
-                      type="text" 
-                      value={item} 
-                      onChange={(e) => handleDefineScopeArrayChange('acceptanceCriteria', index, e.target.value)} 
-                      placeholder="Enter acceptance criteria"
-                      required
-                    />
-                    {defineScopeForm.acceptanceCriteria.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => removeDefineScopeItem('acceptanceCriteria', index)}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button 
-                  type="button" 
-                  className={css.addButton}
-                  onClick={() => addDefineScopeItem('acceptanceCriteria')}
-                >
-                  Add Acceptance Criteria
-                </button>
-              </div>
-              
-              <div className={css.formGroup}>
-                <h4>Exclusions</h4>
-                {defineScopeForm.exclusions.map((item, index) => (
-                  <div key={`exclusion-${index}`} className={css.arrayInput}>
-                    <input 
-                      type="text" 
-                      value={item} 
-                      onChange={(e) => handleDefineScopeArrayChange('exclusions', index, e.target.value)} 
-                      placeholder="Enter exclusion"
-                      required
-                    />
-                    {defineScopeForm.exclusions.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => removeDefineScopeItem('exclusions', index)}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button 
-                  type="button" 
-                  className={css.addButton}
-                  onClick={() => addDefineScopeItem('exclusions')}
-                >
-                  Add Exclusion
-                </button>
-              </div>
-              
-              <div className={css.modalActions}>
-                <button type="button" onClick={() => setDefineScopeModal(false)}>Cancel</button>
-                <button type="submit" className={css.primaryButton}>Submit Scope Definition</button>
-              </div>
-            </form>
-          </Modal>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+    
+    {/* Keep acceptance criteria as is */}
+    <div className={css.formGroup}>
+      <h4>Acceptance Criteria</h4>
+      {defineScopeForm.acceptanceCriteria.map((item, index) => (
+        <div key={`criteria-${index}`} className={css.arrayInput}>
+          <input 
+            type="text" 
+            value={item} 
+            onChange={(e) => handleDefineScopeArrayChange('acceptanceCriteria', index, e.target.value)} 
+            placeholder="Enter acceptance criteria"
+            required
+          />
+          {defineScopeForm.acceptanceCriteria.length > 1 && (
+            <button 
+              type="button" 
+              onClick={() => removeDefineScopeItem('acceptanceCriteria', index)}
+            >
+              Remove
+            </button>
+          )}
+        </div>
+      ))}
+      <button 
+        type="button" 
+        className={css.addButton}
+        onClick={() => addDefineScopeItem('acceptanceCriteria')}
+      >
+        Add Acceptance Criteria
+      </button>
+    </div>
+    
+    {/* Exclusions section */}
+<div className={css.formGroup}>
+  <h4>Exclusions</h4>
+  {defineScopeForm.exclusions.map((item, index) => (
+    <div key={`exclusion-${index}`} className={css.arrayInput}>
+      <input 
+        type="text" 
+        value={item} 
+        onChange={(e) => handleDefineScopeArrayChange('exclusions', index, e.target.value)} 
+        placeholder="Enter exclusion"
+        required
+        className={css.inputField}
+      />
+      {defineScopeForm.exclusions.length > 1 && (
+        <button 
+          type="button" 
+          onClick={() => removeDefineScopeItem('exclusions', index)}
+        >
+          Remove
+        </button>
+      )}
+    </div>
+  ))}
+  <button 
+    type="button" 
+    className={css.addButton}
+    onClick={() => addDefineScopeItem('exclusions')}
+  >
+    Add Exclusion
+  </button>
+</div>
+    
+    <div className={css.modalActions}>
+      <button type="button" onClick={() => setDefineScopeModal(false)}>Cancel</button>
+      <button type="submit" className={css.primaryButton}>Submit Scope Definition</button>
+    </div>
+  </form>
+</Modal>
           {/* Create WBS Modal */}
           <Modal 
             isOpen={createWBSModal} 
