@@ -59,10 +59,21 @@ const [availableDeliverables, setAvailableDeliverables] = useState([]);
   exclusions: [""]
 });
 
-    const [createWBSModal, setCreateWBSModal] = useState(false);
-    const [wbsForm, setWbsForm] = useState({
-      WBS: [""]
-    });
+    // Update wbsForm state
+const [wbsForm, setWbsForm] = useState({
+  WBS: [] // This will store IDs of work items instead of strings
+});
+const [createWBSModal, setCreateWBSModal] = useState(false);
+
+// Add these new state variables with your other state variables
+const [newWorkItem, setNewWorkItem] = useState({
+  name: "",
+  description: "",
+  work: [], // Parent work items
+  deliverable: "" // Selected deliverable ID
+});
+
+const [availableWorkItems, setAvailableWorkItems] = useState([]);
 
 const [scheduleManagementModal, setScheduleManagementModal] = useState(false);
 const [scheduleManagementForm, setScheduleManagementForm] = useState({
@@ -459,11 +470,113 @@ const removeDefineScopeItem = (field, index) => {
   });
 };
 
+// Add this function to fetch work items when opening the modal
+const fetchWorkItems = async (projectId) => {
+  try {
+    const response = await axios.get(`/works/all/${projectId}`);
+    setAvailableWorkItems(response.data || []);
+  } catch (error) {
+    console.error("Failed to fetch work items:", error);
+  }
+};
+
+// Update the openCreateWBSModal function to fetch both deliverables and work items
 const openCreateWBSModal = (projectId) => {
   setSelectedProjectId(projectId);
   setCreateWBSModal(true);
+  fetchProjectDeliverables(projectId); // Reuse existing function
+  fetchWorkItems(projectId);
 };
 
+// Add function to create a new work item
+const createWorkItem = async () => {
+  if (!newWorkItem.name.trim()) {
+    alert("Work item name is required");
+    return;
+  }
+  
+  try {
+    const response = await axios.post('/works/add', {
+      name: newWorkItem.name,
+      description: newWorkItem.description,
+      project: selectedProjectId,
+      work: newWorkItem.work.length > 0 ? newWorkItem.work : undefined,
+      deliverable: newWorkItem.deliverable || undefined
+    });
+    
+    // Add new work item to available list
+    setAvailableWorkItems(prev => [...prev, response.data]);
+    
+    // Clear form
+    setNewWorkItem({ name: "", description: "", work: [], deliverable: "" });
+  } catch (error) {
+    console.error("Failed to create work item:", error);
+    alert("Failed to create work item. Please try again.");
+  }
+};
+
+// Add function to delete a work item
+const deleteWorkItem = async (workId) => {
+  try {
+    await axios.delete(`/works/${workId}`);
+    
+    // Remove from available list
+    setAvailableWorkItems(prev => prev.filter(w => w._id !== workId));
+    
+    // Remove from selected WBS if it's there
+    setWbsForm(prev => ({
+      ...prev,
+      WBS: prev.WBS.filter(id => id !== workId)
+    }));
+  } catch (error) {
+    console.error("Failed to delete work item:", error);
+    alert("Failed to delete work item. Please try again.");
+  }
+};
+
+// Handle changes to new work item form
+const handleNewWorkItemChange = (field, value) => {
+  setNewWorkItem(prev => ({
+    ...prev,
+    [field]: value
+  }));
+};
+
+// Toggle work item for parent selection
+const toggleParentWork = (workId) => {
+  setNewWorkItem(prev => {
+    if (prev.work.includes(workId)) {
+      return {
+        ...prev,
+        work: prev.work.filter(id => id !== workId)
+      };
+    } else {
+      return {
+        ...prev,
+        work: [...prev.work, workId]
+      };
+    }
+  });
+};
+
+// Toggle work item for WBS selection
+const toggleWbsSelection = (workId) => {
+  setWbsForm(prev => {
+    if (prev.WBS.includes(workId)) {
+      return {
+        ...prev,
+        WBS: prev.WBS.filter(id => id !== workId)
+      };
+    } else {
+      return {
+        ...prev,
+        WBS: [...prev.WBS, workId]
+      };
+    }
+  });
+};
+
+// Update the handleCreateWBS function
 const handleCreateWBS = async () => {
   try {
     await axios.patch(
@@ -1844,49 +1957,132 @@ const removeResourceRequirement = (index) => {
     </div>
   </form>
 </Modal>
-          {/* Create WBS Modal */}
           <Modal 
-            isOpen={createWBSModal} 
-            onClose={() => setCreateWBSModal(false)} 
-            title="Create Work Breakdown Structure"
-          >
-            <form onSubmit={(e) => { e.preventDefault(); handleCreateWBS(); }}>
-              <div className={css.formGroup}>
-                <h4>Work Breakdown Structure Items</h4>
-                {wbsForm.WBS.map((item, index) => (
-                  <div key={`wbs-${index}`} className={css.arrayInput}>
-                    <input 
-                      type="text" 
-                      value={item} 
-                      onChange={(e) => handleWBSItemChange(index, e.target.value)} 
-                      placeholder="Enter WBS item"
-                      required
-                    />
-                    {wbsForm.WBS.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => removeWBSItem(index)}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
+  isOpen={createWBSModal} 
+  onClose={() => setCreateWBSModal(false)} 
+  title="Create Work Breakdown Structure"
+>
+  <form onSubmit={(e) => { e.preventDefault(); handleCreateWBS(); }}>
+    {/* Create new work item section */}
+    <div className={css.formGroup}>
+      <h4>Create New Work Item</h4>
+      <div className={css.formGroup}>
+        <label>Name</label>
+        <input 
+          type="text" 
+          value={newWorkItem.name} 
+          onChange={(e) => handleNewWorkItemChange('name', e.target.value)}
+          placeholder="Enter work item name"
+          className={css.inputField}
+        />
+      </div>
+      <div className={css.formGroup}>
+        <label>Description</label>
+        <textarea 
+          value={newWorkItem.description} 
+          onChange={(e) => handleNewWorkItemChange('description', e.target.value)}
+          placeholder="Enter work item description"
+          className={css.textareaField}
+        />
+      </div>
+      
+      {/* Deliverable selection */}
+      <div className={css.formGroup}>
+        <label>Associated Deliverable (Optional)</label>
+        <select 
+          value={newWorkItem.deliverable} 
+          onChange={(e) => handleNewWorkItemChange('deliverable', e.target.value)}
+          className={css.selectField}
+        >
+          <option value="">Select a deliverable</option>
+          {availableDeliverables.map(deliverable => (
+            <option key={deliverable._id} value={deliverable._id}>
+              {deliverable.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      
+      {/* Parent work items selection */}
+      <div className={css.formGroup}>
+        <label>Parent Work Items (Optional)</label>
+        {availableWorkItems.length > 0 ? (
+          <div className={css.workItemsList}>
+            {availableWorkItems.map(work => (
+              <div key={work._id} className={css.checkboxItem}>
+                <label>
+                  <input 
+                    type="checkbox" 
+                    checked={newWorkItem.work.includes(work._id)} 
+                    onChange={() => toggleParentWork(work._id)} 
+                  />
+                  <span>{work.name}</span>
+                </label>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>No existing work items available</p>
+        )}
+      </div>
+      
+      <button 
+        type="button" 
+        onClick={createWorkItem}
+        className={css.addButton}
+      >
+        Create Work Item
+      </button>
+    </div>
+    
+    {/* Work items selection for WBS */}
+    <div className={css.formGroup}>
+      <h4>Select Work Items for WBS</h4>
+      {availableWorkItems.length === 0 ? (
+        <p>No work items available. Create some using the form above.</p>
+      ) : (
+        <div className={css.workItemsList}>
+          {availableWorkItems.map(work => (
+            <div key={work._id} className={css.workItem}>
+              <div className={css.workItemHeader}>
+                <label className={css.checkboxItem}>
+                  <input 
+                    type="checkbox" 
+                    checked={wbsForm.WBS.includes(work._id)} 
+                    onChange={() => toggleWbsSelection(work._id)} 
+                  />
+                  <span className={css.workItemName}>{work.name}</span>
+                </label>
                 <button 
                   type="button" 
-                  className={css.addButton}
-                  onClick={addWBSItem}
+                  onClick={() => deleteWorkItem(work._id)}
+                  className={css.deleteButton}
                 >
-                  Add WBS Item
+                  Delete
                 </button>
               </div>
-              
-              <div className={css.modalActions}>
-                <button type="button" onClick={() => setCreateWBSModal(false)}>Cancel</button>
-                <button type="submit" className={css.primaryButton}>Submit WBS</button>
-              </div>
-            </form>
-          </Modal>
+              {work.description && (
+                <div className={css.workItemDescription}>
+                  <small>{work.description}</small>
+                </div>
+              )}
+              {work.deliverable && (
+                <div className={css.workItemDeliverable}>
+                  <small>Deliverable: {availableDeliverables.find(d => d._id === work.deliverable)?.name || "Unknown"}</small>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+    
+    <div className={css.modalActions}>
+      <button type="button" onClick={() => setCreateWBSModal(false)}>Cancel</button>
+      <button type="submit" className={css.primaryButton}>Submit WBS</button>
+    </div>
+  </form>
+</Modal>
           {/* Plan Schedule Management Modal */}
             <Modal 
               isOpen={scheduleManagementModal} 
