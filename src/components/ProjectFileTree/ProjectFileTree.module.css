@@ -193,3 +193,65 @@
   .primaryButton:hover {
     background-color: #008a69;
   }
+
+  /* Add these to your CSS module */
+.deliverablesList {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+.deliverableItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.checkboxItem {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.newDeliverableForm {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.deleteButton {
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sectionDivider {
+  margin: 20px 0;
+  border: 0;
+  height: 1px;
+  background-color: #ddd;
+}
+
+.selectField {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.selectedActivityDetails {
+  padding: 5px 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  margin-top: 5px;
+}
