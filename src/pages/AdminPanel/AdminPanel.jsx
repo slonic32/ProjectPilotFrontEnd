@@ -11,7 +11,8 @@ import ProjectDashboard from "../../components/ProjectDashboard/ProjectDashboard
 
 import defaultAvatar from "../../assets/images/default-avatar.jpg";
 import { BACKEND_HOST } from "../../config/backend";
-
+import vine1 from "../../assets/images/vine1.png"
+import vine2 from "../../assets/images/vine2.png"
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,12 +65,12 @@ export default function AdminPanel() {
     <div className={css.container}>
       {/* Vines */}
       <img
-        src="src/assets/images/imgbin-leaf-green-leaves-PrY01nVcvG7rKmaHQu1phZLCY.png"
+        src={vine2}
         alt="Vine Right"
         className={css.vineRight}
       />
       <img
-        src="src/assets/images/pngtree-cartoon-green-plant-vine-png-image_4569455.png"
+        src={vine1}
         alt="Vine Middle"
         className={css.vineMiddle}
       />
