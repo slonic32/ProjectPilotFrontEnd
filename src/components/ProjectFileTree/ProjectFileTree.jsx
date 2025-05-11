@@ -1813,7 +1813,7 @@ const removeResourceRequirement = (index) => {
           <h4>Scope Management Plan</h4>
           
           <div className={css.formGroup}>
-            <label>Project Scope Statement</label>
+            <label>How the project scope statement will be prepared?</label>
             <textarea 
               value={scopeManagementForm.scopeManagementPlan.projectScopeStatement} 
               onChange={(e) => handleScopeManagementFormChange('scopeManagementPlan', 'projectScopeStatement', e.target.value)} 
@@ -1822,7 +1822,7 @@ const removeResourceRequirement = (index) => {
           </div>
           
           <div className={css.formGroup}>
-            <label>Work Breakdown Structure (WBS)</label>
+            <label>How the WBS will be obtained from the project scope statement?</label>
             <textarea 
               value={scopeManagementForm.scopeManagementPlan.WBS} 
               onChange={(e) => handleScopeManagementFormChange('scopeManagementPlan', 'WBS', e.target.value)} 
@@ -1831,7 +1831,7 @@ const removeResourceRequirement = (index) => {
           </div>
           
           <div className={css.formGroup}>
-            <label>Scope Baseline</label>
+            <label>How the scope baseline will be approved and maintained?</label>
             <textarea 
               value={scopeManagementForm.scopeManagementPlan.scopeBaseline} 
               onChange={(e) => handleScopeManagementFormChange('scopeManagementPlan', 'scopeBaseline', e.target.value)} 
@@ -1840,7 +1840,7 @@ const removeResourceRequirement = (index) => {
           </div>
           
           <div className={css.formGroup}>
-            <label>Project Deliverables</label>
+            <label>How project deliverables will be accepted?</label>
             <textarea 
               value={scopeManagementForm.scopeManagementPlan.projectDeliverables} 
               onChange={(e) => handleScopeManagementFormChange('scopeManagementPlan', 'projectDeliverables', e.target.value)} 
@@ -1851,7 +1851,7 @@ const removeResourceRequirement = (index) => {
           <h4>Requirements Management Plan</h4>
           
           <div className={css.formGroup}>
-            <label>Requirement Activities</label>
+            <label>How requirement activities will be planned and followed?</label>
             <textarea 
               value={scopeManagementForm.requirementsManagementPlan.requirementActivities} 
               onChange={(e) => handleScopeManagementFormChange('requirementsManagementPlan', 'requirementActivities', e.target.value)} 
@@ -1860,7 +1860,7 @@ const removeResourceRequirement = (index) => {
           </div>
           
           <div className={css.formGroup}>
-            <label>Changes Managed & Approved</label>
+            <label>How changes will be managed and approved?</label>
             <textarea 
               value={scopeManagementForm.requirementsManagementPlan.changesManagedApproved} 
               onChange={(e) => handleScopeManagementFormChange('requirementsManagementPlan', 'changesManagedApproved', e.target.value)} 
@@ -1869,7 +1869,7 @@ const removeResourceRequirement = (index) => {
           </div>
           
           <div className={css.formGroup}>
-            <label>Requirement Prioritized</label>
+            <label>How requirement will be prioritised?</label>
             <textarea 
               value={scopeManagementForm.requirementsManagementPlan.requirementPrioritised} 
               onChange={(e) => handleScopeManagementFormChange('requirementsManagementPlan', 'requirementPrioritised', e.target.value)} 
@@ -1878,7 +1878,7 @@ const removeResourceRequirement = (index) => {
           </div>
           
           <div className={css.formGroup}>
-            <label>Metrics Used</label>
+            <label>Which metrics will be used?</label>
             <textarea 
               value={scopeManagementForm.requirementsManagementPlan.metricsUsed} 
               onChange={(e) => handleScopeManagementFormChange('requirementsManagementPlan', 'metricsUsed', e.target.value)} 
@@ -2240,7 +2240,7 @@ const removeResourceRequirement = (index) => {
                 <h4>Schedule Management Plan</h4>
                 
                 <div className={css.formGroup}>
-                  <label>Change of Schedule</label>
+                  <label>How a change of schedule should be performed?</label>
                   <textarea 
                     value={scheduleManagementForm.scheduleManagementPlan.changeOfSchedule} 
                     onChange={(e) => handleScheduleManagementFormChange('changeOfSchedule', e.target.value)} 
@@ -2250,7 +2250,7 @@ const removeResourceRequirement = (index) => {
                 </div>
                 
                 <div className={css.formGroup}>
-                  <label>Level of Detail</label>
+                  <label>At what level of detail individual activities are going to be defined?</label>
                   <textarea 
                     value={scheduleManagementForm.scheduleManagementPlan.levelOfDetail} 
                     onChange={(e) => handleScheduleManagementFormChange('levelOfDetail', e.target.value)} 
@@ -2260,7 +2260,7 @@ const removeResourceRequirement = (index) => {
                 </div>
                 
                 <div className={css.formGroup}>
-                  <label>Dependencies</label>
+                  <label>How dependencies between activities will be determined?</label>
                   <textarea 
                     value={scheduleManagementForm.scheduleManagementPlan.dependencies} 
                     onChange={(e) => handleScheduleManagementFormChange('dependencies', e.target.value)} 
@@ -2270,7 +2270,7 @@ const removeResourceRequirement = (index) => {
                 </div>
                 
                 <div className={css.formGroup}>
-                  <label>Units of Measure</label>
+                  <label>What units of measure will be used?</label>
                   <textarea 
                     value={scheduleManagementForm.scheduleManagementPlan.unitsOfMeasure} 
                     onChange={(e) => handleScheduleManagementFormChange('unitsOfMeasure', e.target.value)} 
@@ -2280,7 +2280,7 @@ const removeResourceRequirement = (index) => {
                 </div>
                 
                 <div className={css.formGroup}>
-                  <label>Requests for Changes</label>
+                  <label>How requests for changes are going to be carried out?</label>
                   <textarea 
                     value={scheduleManagementForm.scheduleManagementPlan.requestsForChanges} 
                     onChange={(e) => handleScheduleManagementFormChange('requestsForChanges', e.target.value)} 
@@ -2305,7 +2305,7 @@ const removeResourceRequirement = (index) => {
                 <h4>Cost Management Plan</h4>
                 
                 <div className={css.formGroup}>
-                  <h4>Units</h4>
+                  <h4>Units of measure, e.g., currency, minimum wage, liters, etc.</h4>
                   {costManagementForm.costManagementPlan.units.map((item, index) => (
                     <div key={`unit-${index}`} className={css.arrayInput}>
                       <input 
@@ -2335,7 +2335,7 @@ const removeResourceRequirement = (index) => {
                 </div>
                 
                 <div className={css.formGroup}>
-                  <h4>Precision</h4>
+                  <h4> Precision for rounding estimates</h4>
                   {costManagementForm.costManagementPlan.precision.map((item, index) => (
                     <div key={`precision-${index}`} className={css.arrayInput}>
                       <input 
@@ -2365,7 +2365,7 @@ const removeResourceRequirement = (index) => {
                 </div>
                 
                 <div className={css.formGroup}>
-                  <h4>Ranges</h4>
+                  <h4>Ranges of accuracy such as intervals</h4>
                   {costManagementForm.costManagementPlan.ranges.map((item, index) => (
                     <div key={`range-${index}`} className={css.arrayInput}>
                       <input 
@@ -2395,7 +2395,7 @@ const removeResourceRequirement = (index) => {
                 </div>
                 
                 <div className={css.formGroup}>
-                  <h4>Rules</h4>
+                  <h4>Rules and threshold for monitoring cost performance</h4>
                   {costManagementForm.costManagementPlan.rules.map((item, index) => (
                     <div key={`rule-${index}`} className={css.arrayInput}>
                       <input 
@@ -2938,7 +2938,8 @@ const removeResourceRequirement = (index) => {
                 </div>
                 
                 <div className={css.formGroup}>
-                  <label>Roles and Responsibilities</label>
+                  <label>What are the roles (function assumed), authority, competence (skills),
+                  and responsibilities of the human resources</label>
                   <textarea 
                     value={resourceManagementForm.resourceManagementPlan.roles} 
                     onChange={(e) => handleResourceManagementFormChange('roles', e.target.value)} 
@@ -2948,7 +2949,8 @@ const removeResourceRequirement = (index) => {
                 </div>
                 
                 <div className={css.formGroup}>
-                  <label>Training Requirements</label>
+                  <label>Which training is required an how is going to be implemented?
+                  </label>
                   <textarea 
                     value={resourceManagementForm.resourceManagementPlan.training} 
                     onChange={(e) => handleResourceManagementFormChange('training', e.target.value)} 
@@ -2958,7 +2960,8 @@ const removeResourceRequirement = (index) => {
                 </div>
                 
                 <div className={css.formGroup}>
-                  <label>How Resource Quality Is Ensured</label>
+                  <label>How is going to be ensured that the resources are going to be available
+                  when needed?</label>
                   <textarea 
                     value={resourceManagementForm.resourceManagementPlan.ensured} 
                     onChange={(e) => handleResourceManagementFormChange('ensured', e.target.value)} 
