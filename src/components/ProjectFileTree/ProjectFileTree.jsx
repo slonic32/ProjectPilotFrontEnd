@@ -1484,7 +1484,80 @@ const removeResourceRequirement = (index) => {
           </div>
         </form>
       </Modal>
-
+      {/* Determine Budget Modal */}
+<Modal 
+  isOpen={determineBudgetModal} 
+  onClose={() => setDetermineBudgetModal(false)} 
+  title="Determine Budget"
+>
+  <form onSubmit={(e) => { e.preventDefault(); handleDetermineBudget(); }}>
+    <div className={css.formGroup}>
+      <label>Cost Baseline</label>
+      <input 
+        type="number" 
+        value={determineBudgetForm.costBaseline} 
+        onChange={(e) => handleCostBaselineChange(e.target.value)}
+        placeholder="Enter cost baseline"
+        required
+        className={css.inputField}
+      />
+    </div>
+    
+    <div className={css.formGroup}>
+      <h4>Project Funding Requirements</h4>
+      {determineBudgetForm.projectFundingRequirements.map((item, index) => (
+        <div key={`funding-${index}`} className={css.fundingRequirement}>
+          <div className={css.fundingRequirementFields}>
+            <div className={css.formGroup}>
+              <label>Period</label>
+              <input 
+                type="text" 
+                value={item.period} 
+                onChange={(e) => handleFundingRequirementChange(index, 'period', e.target.value)}
+                placeholder="Enter time period (e.g., Q1 2023)"
+                required
+                className={css.inputField}
+              />
+            </div>
+            <div className={css.formGroup}>
+              <label>Cost</label>
+              <input 
+                type="number" 
+                value={item.cost} 
+                onChange={(e) => handleFundingRequirementChange(index, 'cost', e.target.value)}
+                placeholder="Enter cost for this period"
+                required
+                className={css.inputField}
+              />
+            </div>
+          </div>
+          {determineBudgetForm.projectFundingRequirements.length > 1 && (
+            <button 
+              type="button" 
+              onClick={() => removeFundingRequirement(index)}
+              className={css.removeBtn}
+            >
+              Remove
+            </button>
+          )}
+          <hr className={index < determineBudgetForm.projectFundingRequirements.length - 1 ? css.requirementDivider : css.hidden} />
+        </div>
+      ))}
+      <button 
+        type="button" 
+        onClick={addFundingRequirement}
+        className={css.addButton}
+      >
+        Add Funding Requirement
+      </button>
+    </div>
+    
+    <div className={css.modalActions}>
+      <button type="button" onClick={() => setDetermineBudgetModal(false)}>Cancel</button>
+      <button type="submit" className={css.primaryButton}>Determine Budget</button>
+    </div>
+  </form>
+</Modal>
       {/* Identify Stakeholders Modal */}
       <Modal 
         isOpen={stakeholdersModal} 
