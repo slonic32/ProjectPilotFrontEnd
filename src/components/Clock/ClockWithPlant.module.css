@@ -1,0 +1,38 @@
+.clockContainer {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  padding: 20px 24px;
+  box-shadow: 0 8px 24px rgba(0, 128, 64, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.clockContainer:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(0, 128, 64, 0.3);
+}
+
+.clock {
+  font-size: 20px;
+  font-weight: 700;
+  color: #004d33;
+  margin-bottom: 10px;
+}
+
+.plantImage {
+  width: 72px;
+  height: auto;
+  transition: transform 0.3s ease-in-out;
+}
+
+.clockContainer:hover .plantImage {
+  transform: scale(1.2) rotate(-1deg);
+}
