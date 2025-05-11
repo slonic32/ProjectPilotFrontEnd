@@ -1,18 +1,19 @@
 import AddUserForm from "../../components/AddUserForm/AddUserForm";
 import ClockWithPlant from "../../components/Clock/ClockWithPlant";
 import css from "./AddUser.module.css";
-
+import vine1 from "../../assets/images/vine1.png"
+import vine2 from "../../assets/images/vine2.png"
 export default function AddUser() {
   return (
     <div className={css.page}>
       {/* Animated Vines */}
       <img
-        src="src/assets/images/imgbin-leaf-green-leaves-PrY01nVcvG7rKmaHQu1phZLCY.png"
+        src={vine2}
         alt="Left Vine"
         className={`${css.vine} ${css.vineLeft}`}
       />
       <img
-        src="src/assets/images/pngtree-cartoon-green-plant-vine-png-image_4569455.png"
+        src={vine1}
         alt="Top Vine"
         className={`${css.vine} ${css.vineTop}`}
       />
