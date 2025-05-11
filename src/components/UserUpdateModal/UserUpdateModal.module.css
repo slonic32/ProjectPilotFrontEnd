@@ -1,92 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --accent: #20e3b2;
+  --accent-dark: #19c79a;
+  --neutral-bg: #ffffff;
+  --text-color: #0b3c3c;
+  --border-radius: 16px;
+  --error: #d32f2f;
+}
 
 .modalBackdrop {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(4px);
 }
 
 .modalContent {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
+  background: var(--neutral-bg);
+  padding: 40px 32px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   width: 90%;
-  max-width: 500px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 540px;
+  font-family: 'Inter', sans-serif;
+  animation: slideFadeIn 0.4s ease-out;
+}
+
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .modalContent h2 {
-  margin-bottom: 1.5rem;
-  color: #0b3c3c;
+  margin-bottom: 24px;
+  font-size: 24px;
+  color: var(--text-color);
+  text-align: center;
 }
 
 .formGroup {
-  margin-bottom: 1rem;
+  margin-bottom: 20px;
 }
 
 .formGroup label {
+  font-weight: 600;
+  font-size: 14px;
   display: block;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
+  color: #333;
 }
 
 .formGroup input {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 12px 14px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  transition: border 0.3s;
+}
+
+.formGroup input:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(32, 227, 178, 0.2);
 }
 
 .checkboxGroup {
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
+  gap: 8px;
+  margin-top: 12px;
 }
 
-.checkboxGroup input {
-  margin-right: 0.5rem;
+.checkboxGroup label {
+  font-weight: 500;
+  color: #444;
+  font-size: 14px;
 }
 
 .errorText {
-  color: #d32f2f;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+  color: var(--error);
+  font-size: 13px;
+  margin-top: 6px;
 }
 
 .buttonGroup {
   display: flex;
-  justify-content: space-between;
-  margin-top: 1.5rem;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
 }
 
-.saveButton, .cancelButton {
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
+.saveButton,
+.cancelButton {
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 30px;
   border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .saveButton {
-  background-color: #20e3b2;
+  background: linear-gradient(90deg, var(--accent), var(--accent-dark));
   color: white;
-}
-
-.cancelButton {
-  background-color: #f1f1f1;
-  color: #333;
+  box-shadow: 0 4px 12px rgba(32, 227, 178, 0.2);
 }
 
 .saveButton:hover {
-  background-color: #19c79a;
+  background: linear-gradient(90deg, var(--accent-dark), #17b38b);
+}
+
+.cancelButton {
+  background: #f4f4f4;
+  color: #555;
 }
 
 .cancelButton:hover {
-  background-color: #e0e0e0;
+  background: #e6e6e6;
 }

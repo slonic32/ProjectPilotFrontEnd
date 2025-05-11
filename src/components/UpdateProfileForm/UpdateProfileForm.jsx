@@ -3,14 +3,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 import { editUser } from "../../redux/auth/operations";
 import { selectUser } from "../../redux/auth/selectors";
 
 import AvatarInput from "../AvatarInput/AvatarInput";
 import css from "./UpdateProfileForm.module.css";
-
-import { useState } from "react";
 
 const updateProfileSchema = Yup.object().shape({
   name: Yup.string(),
@@ -63,18 +62,15 @@ export default function UpdateProfileForm() {
   };
 
   return (
-    <div className={css.wrapper}>
-      <form onSubmit={handleSubmit(onSubmit)} className={css.formContainer}>
-        <h2>Update Your Profile</h2>
+    <form onSubmit={handleSubmit(onSubmit)} className={css.formContainer}>
+      <h2>Update Your Profile</h2>
 
-        <div className={css.avatarBox}>
-          <AvatarInput
-            control={control}
-            register={register}
-            setMyAvatar={setMyAvatar}
-          />
-        </div>
+      <div className={css.avatarBox}>
+        <AvatarInput control={control} register={register} setMyAvatar={setMyAvatar} />
+      </div>
 
+      {/* Name & Phone side by side */}
+      <div className={css.formGrid}>
         <div>
           <label>Name</label>
           <input
@@ -86,16 +82,6 @@ export default function UpdateProfileForm() {
         </div>
 
         <div>
-          <label>Email</label>
-          <input
-            type="email"
-            placeholder={user.email}
-            {...register("email", { value: user.email })}
-          />
-          {errors.email && <p className={css.error}>{errors.email.message}</p>}
-        </div>
-
-        <div>
           <label>Phone</label>
           <input
             type="tel"
@@ -104,7 +90,23 @@ export default function UpdateProfileForm() {
           />
           {errors.phone && <p className={css.error}>{errors.phone.message}</p>}
         </div>
+      </div>
 
+      {/* Email full width */}
+      <div className={css.formGrid}>
+        <div className={css.fullWidth}>
+          <label>Email</label>
+          <input
+            type="email"
+            placeholder={user.email}
+            {...register("email", { value: user.email })}
+          />
+          {errors.email && <p className={css.error}>{errors.email.message}</p>}
+        </div>
+      </div>
+
+      {/* Passwords side by side */}
+      <div className={css.formGrid}>
         <div>
           <label>New Password</label>
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -144,9 +146,9 @@ export default function UpdateProfileForm() {
             <p className={css.error}>{errors.repeatPassword.message}</p>
           )}
         </div>
+      </div>
 
-        <button type="submit">Update Profile</button>
-      </form>
-    </div>
+      <button type="submit">Update Profile</button>
+    </form>
   );
 }

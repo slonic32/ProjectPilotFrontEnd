@@ -1,56 +1,92 @@
-/* Fullscreen Wrapper with soft blur and clean fit */
-.wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  min-height: 100vh;
-  width: 100vw;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  background:
-    linear-gradient(to right, rgba(32, 227, 178, 0.9), rgba(32, 227, 178, 0.9)),
-    url("/bg-plants.jpg") center/cover no-repeat;
-
-  background-attachment: fixed;
-  padding: 32px;
-  overflow: hidden;
-  box-sizing: border-box;
-
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  animation: fadeIn 0.6s ease-in;
+:root {
+  --accent-color: #00c896;
+  --accent-color-dark: #00a17a;
+  --light-bg: rgba(255, 255, 255, 0.55);
+  --input-border: #ccc;
+  --input-focus: rgba(0, 200, 150, 0.3);
+  --error-color: #d22;
 }
 
-/* Form Card */
+/* Base font */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* MAIN FORM CONTAINER */
 .formContainer {
-  background: rgba(255, 255, 255, 0.96);
-  padding: 36px 52px;
-  border-radius: 28px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-  max-width: 460px;
+  background: var(--light-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 32px;
+  padding: 48px 56px;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+  max-width: 680px;
   width: 100%;
   text-align: center;
-  animation: slideUp 0.5s ease-in-out;
-  margin-top: 150px;
+  animation: slideFade 0.6s ease-in-out;
 }
 
 /* Headings */
 h2 {
-  font-size: 26px;
-  color: #004d3c;
+  font-size: 28px;
+  color: #00392f;
   margin-bottom: 28px;
   font-weight: 700;
 }
 
-/* Avatar Upload */
+/* Avatar */
 .avatarBox {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+}
+.avatarBox img {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  transition: 0.3s ease;
+}
+.avatarBox:hover img {
+  transform: scale(1.05);
+  filter: brightness(0.95);
+}
+
+/* Section headers */
+.sectionHeading {
+  text-align: left;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent-color-dark);
+  margin: 32px 0 16px;
+  border-bottom: 1px solid #e0f2f1;
+  padding-bottom: 4px;
+}
+
+/* Grid layout */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+/* Labels */
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 6px;
+  text-align: left;
 }
 
 /* Inputs */
@@ -60,84 +96,70 @@ input[type="tel"],
 input[type="password"] {
   width: 100%;
   padding: 12px 14px;
-  margin-bottom: 14px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 10px;
   font-size: 15px;
   transition: border-color 0.3s ease;
 }
-
 input:focus {
-  border-color: #00c896;
+  border-color: var(--accent-color);
   outline: none;
+  box-shadow: 0 0 0 2px var(--input-focus);
 }
 
-/* Labels */
-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #333;
-  text-align: left;
-}
-
-/* Submit Button */
-button[type="submit"] {
-  margin-top: 12px;
-  width: 100%;
-  padding: 14px;
-  background: #00c896;
-  border: none;
-  color: white;
-  border-radius: 22px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-button[type="submit"]:hover {
-  background: #00b68f;
-}
-
-/* Toggle Buttons (👁️) */
+/* Password toggle */
 .toggleBtn {
   background: none;
   border: none;
-  cursor: pointer;
-  margin-left: 8px;
+  margin-left: 10px;
   font-size: 18px;
-  line-height: 1;
-  color: #555;
+  cursor: pointer;
+  color: #444;
 }
 
-/* Error Message */
+/* Error text */
 .error {
-  color: #d22;
+  color: var(--error-color);
   font-size: 13px;
-  margin-top: -6px;
-  margin-bottom: 10px;
+  margin-top: -4px;
   text-align: left;
 }
 
+/* Button */
+button[type="submit"] {
+  margin-top: 32px;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(90deg, var(--accent-color), var(--accent-color-dark));
+  border: none;
+  color: #fff;
+  border-radius: 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 200, 150, 0.25);
+}
+button[type="submit"]:hover {
+  background: linear-gradient(90deg, var(--accent-color-dark), #008f6e);
+  box-shadow: 0 6px 18px rgba(0, 180, 130, 0.3);
+}
+
 /* Animations */
-@keyframes slideUp {
+@keyframes slideFade {
   from {
-    transform: translateY(30px);
     opacity: 0;
+    transform: translateY(40px);
   }
   to {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
+/* Responsive */
+@media (max-width: 640px) {
+  .formGrid {
+    grid-template-columns: 1fr;
   }
 }

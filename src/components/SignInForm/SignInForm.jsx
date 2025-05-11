@@ -114,7 +114,6 @@ export default function SignInForm() {
           </motion.button>
 
           <div className={css["link-row"]}>
-            <span>Create an account</span>
             <span>Forgot password?</span>
           </div>
         </form>

@@ -1,12 +1,103 @@
-.profileContainer {
-    padding: 20px;
-    margin-top: 50px;
+.pageWrapper {
+  min-height: 100vh;
+  padding: 100px 40px 40px; 
+  background:
+    linear-gradient(to right, rgba(32, 227, 178, 0.9), rgba(32, 227, 178, 0.9)),
+    url("/bg-plants.jpg") center/cover no-repeat;
+  background-attachment: fixed;
+
+  display: flex;
+  justify-content: center;
+  align-items: start; 
+}
+
+
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.clockWrapper {
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.formWrapper {
+  background: rgba(255, 255, 255, 0.96);
+  padding: 36px 52px;
+  border-radius: 28px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  max-width: 600px;
+  width: 100%;
+  animation: slideUp 0.5s ease-in-out;
+}
+
+
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
   }
-  
-  .profileTitle {
-    font-size: 2rem; /* Adjust the title size as needed */
-    font-weight: bold;
-    color: #333; /* You can change the color */
-    margin-bottom: 20px; /* Adds spacing below the title */
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
-  
+}
+.vineRight {
+  position: absolute;
+  top: 75px;
+  left: 1px;
+  width: 480px;
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+  animation: slideInRight 0.6s ease-out forwards;
+}
+
+.vineMiddle {
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  width: 600px;
+  height: 500px;
+  opacity: 0;
+  z-index: 10;
+  pointer-events: none;
+  animation: slideInTop 0.8s ease-out forwards;
+}
+
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 0.7;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInTop {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-60px);
+  }
+  to {
+    opacity: 0.4;
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
+
+
+.pageWrapper {
+  position: relative;
+  overflow: hidden;
+}

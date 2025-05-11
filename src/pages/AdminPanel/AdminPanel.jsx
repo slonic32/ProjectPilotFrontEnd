@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import css from "./AdminPanel.module.css";
 import toast from "react-hot-toast";
+import css from "./AdminPanel.module.css";
+
+import ClockWithPlant from "../../components/Clock/ClockWithPlant";
 import UserUpdateModal from "../../components/UserUpdateModal/UserUpdateModal";
-import { default as defaultAvatar } from "../../assets/images/default-avatar.jpg";
-import { BACKEND_HOST } from "../../config/backend";
 import WelcomeSection from "../../components/WelcomeSection/WelcomeSection";
 import UserInfo from "../../components/UserInfo/UserInfo";
 import ProjectDashboard from "../../components/ProjectDashboard/ProjectDashboard";
+
+import defaultAvatar from "../../assets/images/default-avatar.jpg";
+import { BACKEND_HOST } from "../../config/backend";
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -22,13 +25,12 @@ export default function AdminPanel() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-
       const response = await axios.get("/users/all");
       setUsers(response.data.users);
-      setLoading(false);
     } catch (error) {
       console.error("Failed to fetch users:", error);
       toast.error("Failed to load users");
+    } finally {
       setLoading(false);
     }
   };
@@ -40,7 +42,7 @@ export default function AdminPanel() {
         toast.success(`User ${user.name} deleted successfully`);
         fetchUsers();
       } catch (error) {
-        console.error("Failed to delete user:", error);
+        console.error("Delete error:", error);
         toast.error("Failed to delete user");
       }
     }
@@ -52,26 +54,49 @@ export default function AdminPanel() {
   };
 
   const handleUserUpdated = (updatedUser) => {
-    const updatedUsers = users.map((user) =>
-      user._id === updatedUser._id ? updatedUser : user
+    setUsers((prev) =>
+      prev.map((u) => (u._id === updatedUser._id ? updatedUser : u))
     );
-    setUsers(updatedUsers);
     fetchUsers();
   };
 
   return (
     <div className={css.container}>
+      {/* Vines */}
+      <img
+        src="src/assets/images/imgbin-leaf-green-leaves-PrY01nVcvG7rKmaHQu1phZLCY.png"
+        alt="Vine Right"
+        className={css.vineRight}
+      />
+      <img
+        src="src/assets/images/pngtree-cartoon-green-plant-vine-png-image_4569455.png"
+        alt="Vine Middle"
+        className={css.vineMiddle}
+      />
+
+      {/* Clock */}
+      <ClockWithPlant />
+
+      {/* Title */}
       <h1>Admin Panel - User Management</h1>
-      
-      <div className={css.whiteBgWrapper}>
+
+      {/* Welcome + Info + Dashboard Section */}
       <div className={css.componentsContainer}>
-        <WelcomeSection />
-        <UserInfo />
-        <ProjectDashboard />
+        <div className={css.welcomeSection}>
+          <WelcomeSection />
+        </div>
+        <div className={css.infoDashboardRow}>
+          <div className={css.userInfo}>
+            <UserInfo />
+          </div>
+          <div className={css.projectDashboard}>
+            <ProjectDashboard />
+          </div>
+        </div>
       </div>
-    </div>
 
 
+      {/* User Table */}
       {loading ? (
         <div className={css.loading}>Loading users...</div>
       ) : (
@@ -89,14 +114,14 @@ export default function AdminPanel() {
               </tr>
             </thead>
             <tbody>
-              {users && users.length > 0 ? (
-                users.map((user, index) => (
-                  <tr key={user.id || index}>
+              {users.length > 0 ? (
+                users.map((user) => (
+                  <tr key={user._id}>
                     <td>
                       <img
                         src={
                           user.avatarURL
-                            ? BACKEND_HOST + "/" + user.avatarURL
+                            ? `${BACKEND_HOST}/${user.avatarURL}`
                             : defaultAvatar
                         }
                         alt={`${user.name}'s avatar`}

@@ -1,19 +1,15 @@
 .header {
-  background-color: rgba(0, 128, 96, 0.15); /* green glassy tint */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 0 0 16px 16px;
-  position: absolute; /* Keep navbar fixed in place */
+  background-color: rgba(0, 128, 96, 0.15);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  border-radius: 0 0 12px 12px;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 24px 48px;
+  padding: 12px 24px; /* slightly more padding than compact version */
   z-index: 10;
-}
-
-.content {
-  margin-top: 0px; 
 }
 
 .navbar {
@@ -25,37 +21,39 @@
 .brand {
   display: flex;
   align-items: center;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 22px; /* larger than previous 20px */
+  font-weight: 600;
   color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .logo {
-  height: 100px; /* Larger logo height */
-  width: auto; /* Maintain aspect ratio */
-  object-fit: contain; /* Prevent distortion */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Slightly larger shadow */
-  transition: transform 0.3s ease; /* Smooth scaling transition on hover */
+  height: 52px; /* slightly larger than 44px, smaller than 64px */
+  width: auto;
+  object-fit: contain;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+  border-radius: 5px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .logo:hover {
-  transform: scale(1.1); /* Slightly enlarge logo on hover */
+  transform: scale(1.05);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.35);
 }
 
 .navLinks {
   display: flex;
-  gap: 24px;
+  gap: 16px;
 }
 
 .link {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   color: white;
   text-decoration: none;
   transition: all 0.3s ease;
   position: relative;
-  padding: 4px 8px;
+  padding: 5px 10px;
 }
 
 .link::after {
@@ -66,7 +64,7 @@
   background: white;
   transition: width 0.3s;
   position: absolute;
-  bottom: -4px;
+  bottom: -3px;
   left: 0;
 }
 
@@ -74,7 +72,12 @@
   width: 100%;
 }
 
+.link:hover {
+  color: #ffeecc;
+}
+
 .link.active {
   color: #ffeecc;
   font-weight: 600;
+  text-shadow: 0 0 3px rgba(255, 238, 204, 0.4);
 }
