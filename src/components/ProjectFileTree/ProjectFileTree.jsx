@@ -1597,7 +1597,6 @@ const removeResourceRequirement = (index) => {
               Add Identification
             </button>
           </div>
-
           <div className={css.formGroup}>
             <h4>Assessment</h4>
             {stakeholdersForm.assessment.map((item, index) => (
